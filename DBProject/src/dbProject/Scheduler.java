@@ -21,7 +21,6 @@ public class Scheduler {
 	private Random seedRand;
 
 	public Scheduler(List<List<Operation>> transactions) {
-
 		this.transactions = new LinkedList<List<OperationDescription>>();
 		this.transactionsBackup = new LinkedList<List<OperationDescription>>();
 		this.transactionsSleep = new LinkedList<List<OperationDescription>>();
