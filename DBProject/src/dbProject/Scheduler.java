@@ -153,6 +153,8 @@ public class Scheduler {
 	}
 
 	public Boolean isDeadlock() {
+		// this can cause livelock, better to use recommendAbort from
+		// LockManager and check that it returns -1 (means there is no deadlock)
 		if (this.transactions.isEmpty() && !this.transactionsSleep.isEmpty()) {
 			return true;
 		}

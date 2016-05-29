@@ -1,8 +1,10 @@
 package dbProject;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import dbProject.Waiter.LockType;
@@ -137,5 +139,20 @@ public class Lock {
 			}
 		}
 		return transactions;
+	}
+
+	public List<Map<String, Integer>> getEdgesForFirstWaiter() {
+		if (this.waiters.isEmpty() || this.holders.isEmpty()) {
+			return null;
+		}
+		List<Map<String, Integer>> edges = new LinkedList<Map<String, Integer>>();
+		int waitingTransaction = this.waiters.get(0).getIndex();
+		for (int i = 0; i < this.holders.size(); i++) {
+			Map<String, Integer> edge = new HashMap<String, Integer>();
+			edge.put("from", waitingTransaction);
+			edge.put("to", this.holders.get(i).intValue());
+			edges.add(edge);
+		}
+		return edges;
 	}
 }
