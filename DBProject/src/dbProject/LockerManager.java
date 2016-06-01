@@ -3,6 +3,7 @@ package dbProject;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class LockerManager {
@@ -143,6 +144,33 @@ public class LockerManager {
 			transactions.addAll(keyList.get(i).awakeTransactions());
 		}
 		return transactions;
+	}
+
+	public int recommendAbort() {
+		// find cycle in the lock graph and return one of its transactions
+
+		Graph g = new Graph();
+		for (int i = 0; i < this.keyList.size(); i++) {
+			List<Map<String, Integer>> edges = this.keyList.get(i).getEdgesForFirstWaiter();
+			if (edges != null) {
+				for (int j = 0; j < edges.size(); j++) {
+					int from = edges.get(j).get("from");
+					int to = edges.get(j).get("to");
+					g.addEdge(from, to);
+				}
+			}
+		}
+		for (int i = 0; i < this.pageList.size(); i++) {
+			List<Map<String, Integer>> edges = this.pageList.get(i).getEdgesForFirstWaiter();
+			if (edges != null) {
+				for (int j = 0; j < edges.size(); j++) {
+					int from = edges.get(j).get("from");
+					int to = edges.get(j).get("to");
+					g.addEdge(from, to);
+				}
+			}
+		}
+		return g.findTransactionInCycle();
 	}
 
 }
