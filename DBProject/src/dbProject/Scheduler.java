@@ -174,16 +174,27 @@ public class Scheduler {
 	}
 
 	public void awakeTransactions(Set<Integer> transactions) {
-		// remove empty transactions
+		// move transaction from sleep to awake
+		List<Integer> toRemove = new LinkedList<Integer>();
 		Iterator<Integer> iter = transactions.iterator();
 		while (iter.hasNext()) {
 			int transactionIndex = iter.next();
 			for (int i = 0; i < this.transactionsSleep.size(); i++) {
 				if ((this.transactionsSleep.get(i).get(0)).getTransaction() == transactionIndex) {
-					List<OperationDescription> transaction = this.transactionsSleep.remove(i);
+					List<OperationDescription> transaction = this.transactionsSleep.get(i);
+					toRemove.add(transaction.get(0).getTransaction());
 					// important to insert the transaction at the end of the
 					// list for the round robin and serial correctness
 					this.transactions.add(transaction);
+				}
+			}
+		}
+
+		// remove from sleep all transaction which were marked to remove
+		for (int i = 0; i < toRemove.size(); i++) {
+			for (int j = 0; j < this.transactionsSleep.size(); j++) {
+				if (this.transactionsSleep.get(j).get(0).getTransaction() == toRemove.get(i)) {
+					this.transactionsSleep.remove(j);
 				}
 			}
 		}

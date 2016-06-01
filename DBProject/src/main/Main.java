@@ -21,38 +21,38 @@ public class Main {
 
 	public static void main(String[] args) {
 
-//		 List<List<Object>> list = new LinkedList<List<Object>>();
-//		
-//		 list.add(new LinkedList<Object>());
-//		 list.add(new LinkedList<Object>());
-//		 list.add(new LinkedList<Object>());
-//		
-//		 list.get(0).add(new Object());
-//		 list.get(0).add(new Object());
-//		 list.get(1).add(new Object());
-//		 list.get(1).add(new Object());
-//		 list.get(1).add(new Object());
-//		 list.get(1).add(new Object());
-//		 list.get(2).add(new Object());
-//		 list.get(2).add(new Object());
-//		 list.get(2).add(new Object());
-//		 list.get(2).add(new Object());
-//		 list.get(2).add(new Object());
-//		
-//		 Scheduler sced = new Scheduler(list);
-//		 sced.setSchedulerType(SchedulerType.PSUDO_RANDOM);
-//		 int i = 0;
-//		 Set<Integer> awake = new HashSet<Integer>();
-//		 awake.add(0);
-//		
-//		 while (sced.hasNext()) {
-//		 OperationDescription od = sced.next();
-//		 System.out.println(od.getTransaction() + " - " + od.getOperation());
-//		 if (i == 4) {
-//		 sced.abortTransaction(1);
-//		 }
-//		 i++;
-//		 }
+		 List<List<Object>> list = new LinkedList<List<Object>>();
+		
+		 list.add(new LinkedList<Object>());
+		 list.add(new LinkedList<Object>());
+		 list.add(new LinkedList<Object>());
+		
+		 list.get(0).add(new Object());
+		 list.get(0).add(new Object());
+		 list.get(1).add(new Object());
+		 list.get(1).add(new Object());
+		 list.get(1).add(new Object());
+		 list.get(1).add(new Object());
+		 list.get(2).add(new Object());
+		 list.get(2).add(new Object());
+		 list.get(2).add(new Object());
+		 list.get(2).add(new Object());
+		 list.get(2).add(new Object());
+		
+		 Scheduler sced = new Scheduler(list);
+		 sced.setSchedulerType(SchedulerType.SERIAL);
+		 int i = 0;
+		 Set<Integer> awake = new HashSet<Integer>();
+		 awake.add(0);
+		
+		 while (sced.hasNext()) {
+		 OperationDescription od = sced.next();
+		 System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
+		 if (i == 4) {
+		 sced.abortTransaction(1);
+		 }
+		 i++;
+		 }
 
 		// Object ob = new Object();
 		// LockerManager locker = new LockerManager();
