@@ -20,7 +20,7 @@ public class Scheduler {
 	private SchedulerType type;
 	private Random seedRand;
 
-	public Scheduler(List<List<Operation>> transactions) {
+	public Scheduler(List<List<Object>> transactions) {
 
 		this.transactions = new LinkedList<List<OperationDescription>>();
 		this.transactionsBackup = new LinkedList<List<OperationDescription>>();
