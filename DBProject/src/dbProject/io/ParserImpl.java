@@ -1,4 +1,4 @@
-package dbProject.parser;
+package dbProject.io;
 
 import dbProject.Operation;
 
@@ -9,8 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ParserImpl implements Parser {
+
+    private static final String FILE_NAME = "transactions.dat";
+
     @Override
-    public List<List<Operation>> parse(String fileName) {
+    public List<List<Operation>> parse() {
 
         BufferedReader br = null;
         List<List<Operation>> list = new LinkedList<>();
@@ -20,7 +23,7 @@ public class ParserImpl implements Parser {
 
             String sCurrentLine;
 
-            br = new BufferedReader(new FileReader(fileName));
+            br = new BufferedReader(new FileReader(FILE_NAME));
 
             while ((sCurrentLine = br.readLine()) != null) {
 
