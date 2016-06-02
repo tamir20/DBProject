@@ -1,5 +1,7 @@
 package dbProject;
 
+import dbProject.model.Operation;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -192,8 +194,8 @@ public class Scheduler {
 		// return the aborted transaction left to excecute, or if the
 		// transaction aborted before it started, return the original
 		// transaction
-		List<OperationDescription> result = new LinkedList<OperationDescription>();
-		Stack<OperationDescription> stack = new Stack<OperationDescription>();
+		List<OperationDescription> result = new LinkedList<>();
+		Stack<OperationDescription> stack = new Stack<>();
 		int currentOperation = transaction.get(0).getOperation();
 		Boolean operationFound = false;
 
@@ -215,7 +217,7 @@ public class Scheduler {
 			// transaction from the backup
 			for (int i = 0; i < this.transactionsBackup.size(); i++) {
 				if (this.transactionsBackup.get(i).get(0).getTransaction() == transaction.get(0).getTransaction()) {
-					result = new LinkedList<OperationDescription>(this.transactionsBackup.get(i));
+					result = new LinkedList<>(this.transactionsBackup.get(i));
 					return result;
 				}
 			}

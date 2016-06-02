@@ -1,6 +1,7 @@
 package dbProject.io;
 
-import dbProject.Operation;
+import dbProject.model.Operation;
+import dbProject.model.Transaction;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,10 +14,10 @@ public class ParserImpl implements Parser {
     private static final String FILE_NAME = "transactions.dat";
 
     @Override
-    public List<List<Operation>> parse() {
+    public List<Transaction> parse() {
 
         BufferedReader br = null;
-        List<List<Operation>> list = new LinkedList<>();
+        List<Transaction> list = new LinkedList<>();
 
 
         try {
@@ -46,7 +47,7 @@ public class ParserImpl implements Parser {
         return list;
     }
 
-    private void handleOperation(List<List<Operation>> list, Operation operation) {
+    private void handleOperation(List<Transaction> list, Operation operation) {
         //todo:omar implement this
 
 //        if (operation.getCommand().equals(Commands.BEGIN)){

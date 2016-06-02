@@ -1,20 +1,7 @@
 package main;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import dbProject.Disk;
-import dbProject.Graph;
 import dbProject.LockException;
-import dbProject.LockerManager;
-import dbProject.Operation;
-import dbProject.OperationDescription;
-import dbProject.Record;
-import dbProject.Scheduler;
-import dbProject.Scheduler.SchedulerType;
+import dbProject.LockManager;
 
 public class Main {
 
@@ -54,7 +41,7 @@ public class Main {
 		// }
 
 		Object ob = new Object();
-		LockerManager locker = new LockerManager();
+		LockManager locker = new LockManager();
 		try {
 			locker.lockPageRead(ob, 2);
 			locker.lockPageWrite(ob, 3);
