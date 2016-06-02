@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LockerManager {
+public class LockManager {
 
-	List<LockKey> keyList;
-	List<LockPage> pageList;
+	private List<LockKey> keyList;
+	private List<LockPage> pageList;
 
-	public LockerManager() {
+	public LockManager() {
 		this.keyList = new LinkedList<LockKey>();
 		this.pageList = new LinkedList<LockPage>();
 	}
@@ -72,6 +72,15 @@ public class LockerManager {
 					this.keyList.remove(i);
 				}
 			}
+		}
+	}
+
+	public void unlockEverything(int transactionIndex) {
+		for (int i = 0; i < this.keyList.size(); i++) {
+			this.keyList.get(i).unlockEverything(transactionIndex);
+		}
+		for (int i = 0; i < this.pageList.size(); i++) {
+			this.pageList.get(i).unlockEverything(transactionIndex);
 		}
 	}
 
