@@ -1,5 +1,7 @@
 package dbProject;
 
+import dbProject.model.Record;
+
 import java.util.LinkedList;
 import java.util.List;
 

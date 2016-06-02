@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dbProject.Waiter.LockType;
+import dbProject.model.Waiter;
+import dbProject.model.Waiter.LockType;
 
 public class Lock {
 	private int readLock;
