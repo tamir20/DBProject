@@ -27,43 +27,42 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		// List<List<Object>> list = new LinkedList<List<Object>>();
-		//
-		// list.add(new LinkedList<Object>());
-		// list.add(new LinkedList<Object>());
-		// list.add(new LinkedList<Object>());
-		//
-		// list.get(0).add(new Object());
-		// list.get(0).add(new Object());
-		// list.get(1).add(new Object());
-		// list.get(1).add(new Object());
-		// list.get(1).add(new Object());
-		// list.get(1).add(new Object());
-		// list.get(2).add(new Object());
-		// list.get(2).add(new Object());
-		// list.get(2).add(new Object());
-		// list.get(2).add(new Object());
-		// list.get(2).add(new Object());
-		//
-		// Scheduler sced = new Scheduler(list);
-		// sced.setSchedulerType(SchedulerType.SERIAL);
-		// int i = 0;
-		// Set<Integer> awake = new HashSet<Integer>();
-		// awake.add(1);
-		//
-		// while (sced.hasNext()) {
-		// OperationDescription od = sced.next();
-		// System.out.println(od.getTransaction() + " - " + od.getOperation() +
-		// " - " + od.isAborted());
-		// if (i == 4) {
-		// // sced.abortTransaction(1);
-		// sced.sleepTransaction(1);
-		// }
-		// if (i == 5) {
-		// sced.awakeTransactions(awake);
-		// }
-		// i++;
-		// }
+		List<List<Object>> list = new LinkedList<List<Object>>();
+
+		list.add(new LinkedList<Object>());
+		list.add(new LinkedList<Object>());
+		list.add(new LinkedList<Object>());
+
+		list.get(0).add(new Object());
+		list.get(0).add(new Object());
+		list.get(1).add(new Object());
+		list.get(1).add(new Object());
+		list.get(1).add(new Object());
+		list.get(1).add(new Object());
+		list.get(2).add(new Object());
+		list.get(2).add(new Object());
+		list.get(2).add(new Object());
+		list.get(2).add(new Object());
+		list.get(2).add(new Object());
+
+		Scheduler sced = new Scheduler(list);
+		sced.setSchedulerType(SchedulerType.SERIAL);
+		int i = 0;
+		Set<Integer> awake = new HashSet<Integer>();
+		awake.add(1);
+
+		while (sced.hasNext()) {
+			OperationDescription od = sced.next();
+			System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
+			if (i == 4) {
+				// sced.abortTransaction(1);
+				sced.sleepTransaction(1);
+			}
+			if (i == 5) {
+				sced.awakeTransactions(awake);
+			}
+			i++;
+		}
 
 		// Object ob = new Object();
 		// LockManager locker = new LockManager();
@@ -105,48 +104,40 @@ public class Main {
 		// g.addEdge(3, 1);
 		// System.out.println(g.findTransactionInCycle());
 
-		// List<Map<String, Object>> sales = new LinkedList<Map<String,
-		// Object>>();
-		//
-		// Map<String, Object> sale = new HashMap<String, Object>();
-		// sale.put("duration", 30);
-		// sale.put("numUsed", 3);
-		// sale.put("description", "good");
+//		LockManager lock = new LockManager();
+//		BPlusTree tree = new BPlusTree(3, lock);
+//		try {
+//			tree.insertData(1, 1, 1);
+//			tree.insertData(2, 1, 1);
+//			tree.insertData(3, 1, 1);
+//			tree.insertData(4, 1, 1);
+//			tree.insertData(5, 1, 1);
+//			tree.insertData(6, 1, 1);
+//			tree.insertData(7, 1, 1);
+//			tree.insertData(8, 1, 1);
+//			tree.insertData(9, 1, 1);
+//			//lock.unlockEverything(1);
+//			tree.insertData(10, 1, 1);
+//			System.out.println(tree.range_search(2, 100, 1));
+//			
+//			//tree.removeData(3, 1);
+//			//tree.removeData(4, 2);
+//			//tree.removeData(5, 1);
+//			//tree.removeData(6, 1);
+//			//tree.removeData(7, 1);
+//			//tree.removeData(8, 1);
+//			//tree.removeData(9, 1);
+//			
+//		} catch (LockException e) {
+//			System.out.println(e.getMessage());
+//		}
 
-		// Date date = new Date(1464812526*(long)1000);
-		// Calendar cal1 = Calendar.getInstance();
-		// cal1.setTime(date);
-		// System.out.println(cal1.get(Calendar.DAY_OF_YEAR));
-		// Format formatter = new SimpleDateFormat("MMM yy", Locale.ENGLISH);
-		// System.out.println(formatter.format(date));
-
-		LockManager lock = new LockManager();
-		BPlusTree tree = new BPlusTree(3, lock);
-		try {
-			tree.insertData(1, 1, 1);
-			tree.insertData(2, 1, 1);
-			tree.insertData(3, 1, 1);
-			tree.insertData(4, 1, 1);
-			tree.insertData(5, 1, 1);
-			tree.insertData(6, 1, 1);
-			tree.insertData(7, 1, 1);
-			tree.insertData(8, 1, 1);
-			tree.insertData(9, 1, 1);
-			//lock.unlockEverything(1);
-			tree.insertData(10, 1, 1);
-			System.out.println(tree.range_search(2, 100, 1));
-			
-			//tree.removeData(3, 1);
-			//tree.removeData(4, 2);
-			//tree.removeData(5, 1);
-			//tree.removeData(6, 1);
-			//tree.removeData(7, 1);
-			//tree.removeData(8, 1);
-			//tree.removeData(9, 1);
-			
-		} catch (LockException e) {
-			System.out.println(e.getMessage());
-		}
+//		Date date = new Date(1464812526 * (long) 1000);
+//		Calendar cal1 = Calendar.getInstance();
+//		cal1.setTime(date);
+//		System.out.println(cal1.get(Calendar.DAY_OF_YEAR));
+//		Format formatter = new SimpleDateFormat("MMM yy", Locale.ENGLISH);
+//		System.out.println(formatter.format(date));
 
 	}
 

@@ -9,6 +9,7 @@ import java.util.Stack;
 
 public class Scheduler {
 	// after each operation, need to awake transactions and check for deadlock
+	public final int COMMIT = -1;
 
 	public static enum SchedulerType {
 		SERIAL, ROUND_ROBIN, PSUDO_RANDOM
@@ -57,6 +58,13 @@ public class Scheduler {
 			if (transaction.isEmpty()) {
 				iter.remove();
 			}
+		}
+
+		// add commit (release all key locks operation) to all transactions
+		for (int i = 0; i < transactions.size(); i++) {
+			OperationDescription od = new OperationDescription(i, COMMIT, false);
+			this.transactions.get(i).add(od);
+			this.transactionsBackup.get(i).add(od);
 		}
 	}
 
