@@ -164,13 +164,30 @@ public class Scheduler {
 	public void sleepTransaction(int transactiosIndex) {
 		// I assume the transactions have at least 1 operation
 
-		List<OperationDescription> transaction;
+		List<OperationDescription> transaction = null;
 		for (int i = 0; i < this.transactions.size(); i++) {
 			if ((this.transactions.get(i).get(0)).getTransaction() == transactiosIndex) {
 				transaction = this.transactions.remove(i);
-				this.transactionsSleep.add(transaction);
+
 			}
 		}
+
+		// get the last operation executed and return it to the transaction
+		// (because if we are here then the last operation failed). get the last
+		// operation from the backup
+
+		for (int i = 0; i < this.transactionsBackup.size(); i++) {
+			if (this.transactionsBackup.get(i).get(0).getTransaction() == transactiosIndex) {
+				int currentOperation = transaction.get(0).getOperation();
+				for (int j = 0; j < this.transactionsBackup.get(i).size() - 1; j++) {
+					if (currentOperation == this.transactionsBackup.get(i).get(j + 1).getOperation()) {
+						transaction.add(0, new OperationDescription(this.transactionsBackup.get(i).get(j)));
+					}
+				}
+			}
+		}
+
+		this.transactionsSleep.add(transaction);
 	}
 
 	public void awakeTransactions(Set<Integer> transactions) {

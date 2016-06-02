@@ -1,9 +1,14 @@
 package main;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -21,38 +26,42 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		 List<List<Object>> list = new LinkedList<List<Object>>();
-		
-		 list.add(new LinkedList<Object>());
-		 list.add(new LinkedList<Object>());
-		 list.add(new LinkedList<Object>());
-		
-		 list.get(0).add(new Object());
-		 list.get(0).add(new Object());
-		 list.get(1).add(new Object());
-		 list.get(1).add(new Object());
-		 list.get(1).add(new Object());
-		 list.get(1).add(new Object());
-		 list.get(2).add(new Object());
-		 list.get(2).add(new Object());
-		 list.get(2).add(new Object());
-		 list.get(2).add(new Object());
-		 list.get(2).add(new Object());
-		
-		 Scheduler sced = new Scheduler(list);
-		 sced.setSchedulerType(SchedulerType.SERIAL);
-		 int i = 0;
-		 Set<Integer> awake = new HashSet<Integer>();
-		 awake.add(0);
-		
-		 while (sced.hasNext()) {
-		 OperationDescription od = sced.next();
-		 System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
-		 if (i == 4) {
-		 sced.abortTransaction(1);
-		 }
-		 i++;
-		 }
+//		List<List<Object>> list = new LinkedList<List<Object>>();
+//
+//		list.add(new LinkedList<Object>());
+//		list.add(new LinkedList<Object>());
+//		list.add(new LinkedList<Object>());
+//
+//		list.get(0).add(new Object());
+//		list.get(0).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//
+//		Scheduler sced = new Scheduler(list);
+//		sced.setSchedulerType(SchedulerType.SERIAL);
+//		int i = 0;
+//		Set<Integer> awake = new HashSet<Integer>();
+//		awake.add(1);
+//
+//		while (sced.hasNext()) {
+//			OperationDescription od = sced.next();
+//			System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
+//			if (i == 4) {
+//				// sced.abortTransaction(1);
+//				sced.sleepTransaction(1);
+//			}
+//			if (i == 5) {
+//				sced.awakeTransactions(awake);
+//			}
+//			i++;
+//		}
 
 		// Object ob = new Object();
 		// LockerManager locker = new LockerManager();
@@ -100,6 +109,14 @@ public class Main {
 //		sale.put("duration", 30);
 //		sale.put("numUsed", 3);
 //		sale.put("description", "good");
+		
+//		Date date = new Date(1464812526*(long)1000);
+//		Calendar cal1 = Calendar.getInstance();
+//		cal1.setTime(date);
+//		System.out.println(cal1.get(Calendar.DAY_OF_YEAR));
+//		Format formatter = new SimpleDateFormat("MMM yy", Locale.ENGLISH);
+//		System.out.println(formatter.format(date));
+		
 	}
 
 }
