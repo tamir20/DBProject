@@ -1,3 +1,10 @@
-1 Allocate_record(1, "Technion", "CS") Allocate_record(2, "BIU", "CSE") Insert("Technion", rid1) Insert("BIU", rid2);
-22 Search(3)^rid1 Delete(rid1);
-11 Range_search(1,8);
+Allocate_record(1, "Technion", "CS")
+Allocate_record(2, "BIU", "CSE")
+Insert("Technion", rid1)
+Insert("BIU", rid2)
+;
+Search(3)^rid1
+Delete(rid1)
+;
+Range_search(1,8)
+;
