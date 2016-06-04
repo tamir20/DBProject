@@ -2,6 +2,7 @@ package dbProject;
 
 import dbProject.io.Logger;
 import dbProject.io.Parser;
+import dbProject.io.ParserImpl;
 import dbProject.model.Operation;
 import dbProject.model.Transaction;
 
@@ -23,13 +24,16 @@ public class DatabaseManager {
 
     public DatabaseManager() {
         //init everything
+        parser = new ParserImpl();
     }
 
     public void run(){
 
-        List<Transaction> transactionList;
-        transactionList = parser.parse();
+        List<Transaction> transactionList = parser.parse();
 
+        System.out.println(transactionList);
+
+        //todo:tamir change this to use the transactionList
         List<List<Operation>> tempList = null;
 
         scheduler = new Scheduler(tempList);

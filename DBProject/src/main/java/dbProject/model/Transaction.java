@@ -1,5 +1,6 @@
 package dbProject.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Transaction {
@@ -9,6 +10,11 @@ public class Transaction {
     private int runCount;
 
     private List<Operation> operationList;
+
+    public Transaction(int id) {
+        this.id = id;
+        operationList = new ArrayList<>();
+    }
 
     public Operation get(int i){
         return operationList.get(i);
@@ -40,5 +46,18 @@ public class Transaction {
 
     public void setOperationList(List<Operation> operationList) {
         this.operationList = operationList;
+    }
+
+    public void add(Operation operation) {
+        operationList.add(operation);
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "runCount=" + runCount +
+                ", id=" + id +
+                ", operationList=" + operationList +
+                "}\n";
     }
 }

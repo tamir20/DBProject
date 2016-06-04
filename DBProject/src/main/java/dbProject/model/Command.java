@@ -1,5 +1,9 @@
 package dbProject.model;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public enum Command {
 
     ALLOCATE_RECORD("A",16),
@@ -35,10 +39,13 @@ public enum Command {
         return result;
     }
 
-    public static String getParameters(Command command, String line) {
-        String result = null;
+    public static List<String> getParameters(String line) {
+        List<String> result = null;
+        Command command = Command.getCommand(line);
+
         if (!command.equals(END_TRANSACTION)){
-            result = line.substring(command.getParamIndex(), line.length()-1);
+            String parametersCSV = line.substring(command.getParamIndex(), line.length()-1);;
+            result = Arrays.asList(parametersCSV.split(","));
         }
         return result;
     }

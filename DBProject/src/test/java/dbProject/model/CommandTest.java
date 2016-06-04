@@ -58,12 +58,12 @@ public class CommandTest {
         String test5 = "Range_search(1,8)";
         String test6 = ";";
 
-        System.out.println(Command.getParameters(Command.ALLOCATE_RECORD, test1));
-        System.out.println(Command.getParameters(Command.INSERT, test2));
-        System.out.println(Command.getParameters(Command.DELETE, test3));
-        System.out.println(Command.getParameters(Command.SEARCH, test4));
-        System.out.println(Command.getParameters(Command.RANGE_SEARCH, test5));
-        System.out.println(Command.getParameters(Command.END_TRANSACTION, test6));
+        System.out.println(Command.getParameters(test1));
+        System.out.println(Command.getParameters(test2));
+        System.out.println(Command.getParameters(test3));
+        System.out.println(Command.getParameters(test4));
+        System.out.println(Command.getParameters(test5));
+        System.out.println(Command.getParameters(test6));
 
     }
 
