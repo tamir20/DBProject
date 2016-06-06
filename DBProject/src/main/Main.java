@@ -27,42 +27,42 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		List<List<Object>> list = new LinkedList<List<Object>>();
-
-		list.add(new LinkedList<Object>());
-		list.add(new LinkedList<Object>());
-		list.add(new LinkedList<Object>());
-
-		list.get(0).add(new Object());
-		list.get(0).add(new Object());
-		list.get(1).add(new Object());
-		list.get(1).add(new Object());
-		list.get(1).add(new Object());
-		list.get(1).add(new Object());
-		list.get(2).add(new Object());
-		list.get(2).add(new Object());
-		list.get(2).add(new Object());
-		list.get(2).add(new Object());
-		list.get(2).add(new Object());
-
-		Scheduler sced = new Scheduler(list);
-		sced.setSchedulerType(SchedulerType.SERIAL);
-		int i = 0;
-		Set<Integer> awake = new HashSet<Integer>();
-		awake.add(1);
-
-		while (sced.hasNext()) {
-			OperationDescription od = sced.next();
-			System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
-			if (i == 4) {
-				// sced.abortTransaction(1);
-				sced.sleepTransaction(1);
-			}
-			if (i == 5) {
-				sced.awakeTransactions(awake);
-			}
-			i++;
-		}
+//		List<List<Object>> list = new LinkedList<List<Object>>();
+//
+//		list.add(new LinkedList<Object>());
+//		list.add(new LinkedList<Object>());
+//		list.add(new LinkedList<Object>());
+//
+//		list.get(0).add(new Object());
+//		list.get(0).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(1).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//		list.get(2).add(new Object());
+//
+//		Scheduler sced = new Scheduler(list);
+//		sced.setSchedulerType(SchedulerType.SERIAL);
+//		int i = 0;
+//		Set<Integer> awake = new HashSet<Integer>();
+//		awake.add(1);
+//
+//		while (sced.hasNext()) {
+//			OperationDescription od = sced.next();
+//			System.out.println(od.getTransaction() + " - " + od.getOperation() + " - " + od.isAborted());
+//			if (i == 4) {
+//				// sced.abortTransaction(1);
+//				sced.sleepTransaction(1);
+//			}
+//			if (i == 5) {
+//				sced.awakeTransactions(awake);
+//			}
+//			i++;
+//		}
 
 		// Object ob = new Object();
 		// LockManager locker = new LockManager();
@@ -131,14 +131,26 @@ public class Main {
 //		} catch (LockException e) {
 //			System.out.println(e.getMessage());
 //		}
-
-//		Date date = new Date(1464812526 * (long) 1000);
-//		Calendar cal1 = Calendar.getInstance();
-//		cal1.setTime(date);
-//		System.out.println(cal1.get(Calendar.DAY_OF_YEAR));
-//		Format formatter = new SimpleDateFormat("MMM yy", Locale.ENGLISH);
-//		System.out.println(formatter.format(date));
-
+		
+//		long time = new Date().getTime();
+//		System.out.println(time);
+//		String time2=Integer.toString(Integer.parseInt(Long.toString(time/1000)));
+//		System.out.println(time2);
+//		Random rnd = new Random();
+//		for(int i=0;i<60;i++){
+//		System.out.println(rnd.nextInt(3));}
+		long time = new Date().getTime();
+		Date d = new Date(time);
+		int counter = 0;
+		long timeLastYear = time - (60 * (long)60 * 24 * 365 * 1000);
+		while(timeLastYear<=time){
+			counter++;
+			timeLastYear+=60 * (long)60 * 24 * 1000;
+			
+		}
+		int letter = 5;
+		String lettered = ""+((char)(letter+92));
+		System.out.println(lettered);
 	}
 
 }

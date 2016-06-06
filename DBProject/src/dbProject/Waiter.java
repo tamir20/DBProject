@@ -2,10 +2,6 @@ package dbProject;
 
 public class Waiter {
 
-	public static enum LockType {
-		READ, WRITE
-	}
-
 	private int transactionIndex;
 	private LockType type;
 

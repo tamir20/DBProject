@@ -1,6 +1,5 @@
 package dbProject;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +17,7 @@ public class BPlusTree {
 		this.lock = lock;
 
 		// add -1 to the tree to be the lowest id in the tree for future locks
-		data dat = new data(-1, -1);
+		Data dat = new Data(-1, -1);
 		insertToLeaf((LeafNode) this.root, -1, dat);
 	}
 
@@ -29,9 +28,9 @@ public class BPlusTree {
 		this.lock.lockKeyRead(key, transactionIndex);
 		int res = -1;
 		LeafNode leaf = getLeaf(key, transactionIndex);
-		List<data> data_list = leaf.getEntries();
-		for (Iterator<data> i = data_list.iterator(); i.hasNext();) {
-			data it_data = i.next();
+		List<Data> Data_list = leaf.getEntries();
+		for (Iterator<Data> i = Data_list.iterator(); i.hasNext();) {
+			Data it_data = i.next();
 			if (it_data.key == key) {
 				res = it_data.rID;
 			}
@@ -41,14 +40,14 @@ public class BPlusTree {
 	}
 
 	public boolean insertData(int key, int rID, int transactionIndex) throws LockException {
-		// enter data to the tree
+		// enter Data to the tree
 		// @input: key number and relative ID.
-		// @output: true if data added to the tree false if key already
+		// @output: true if Data added to the tree false if key already
 		// occupied.
 		LeafNode leaf = getLeaf(key, transactionIndex);
 		this.lock.lockKeyRead(getKeyBefore(key, transactionIndex), transactionIndex);
 		this.lock.lockKeyWrite(key, transactionIndex);
-		data insert_data = new data(key, rID);
+		Data insert_data = new Data(key, rID);
 		boolean res = insertToLeaf(leaf, key, insert_data);
 		if (leaf.getSize() > this.node_size) {
 			LeafNode new_leaf = new LeafNode(0);
@@ -85,13 +84,13 @@ public class BPlusTree {
 	}
 
 	public boolean removeData(int key, int transactionIndex) throws LockException {
-		// remove data from the tree
+		// remove Data from the tree
 		// @input: key number
-		// @output: true if data removed from the tree false if not in there.
+		// @output: true if Data removed from the tree false if not in there.
 		this.lock.lockKeyWrite(key, transactionIndex);
 		LeafNode leaf = getLeaf(key, transactionIndex);
-		for (ListIterator<data> i = leaf.getEntries().listIterator(); i.hasNext();) {
-			data dat = i.next();
+		for (ListIterator<Data> i = leaf.getEntries().listIterator(); i.hasNext();) {
+			Data dat = i.next();
 			if (dat.key == key) {
 				i.previous();
 				i.remove();
@@ -158,22 +157,22 @@ public class BPlusTree {
 		this.root = new_root;
 	}
 
-	private boolean insertToLeaf(LeafNode leaf, int key, data insertion) {
-		// insert data to given leaf
+	private boolean insertToLeaf(LeafNode leaf, int key, Data insertion) {
+		// insert Data to given leaf
 		// @input: leaf to insert, key number and relative ID.
-		// @output: true if data added to the tree false if key already
+		// @output: true if Data added to the tree false if key already
 		// occupied.
 		boolean res = false;
 		boolean inserted = false;
-		List<data> leaf_list = leaf.getEntries();
+		List<Data> leaf_list = leaf.getEntries();
 		if (leaf_list.size() == 0) {
 			leaf_list.add(insertion);
 			leaf.key = key;
 			res = true;
 		} else {
-			data last_leaf = null;
-			for (ListIterator<data> i = leaf_list.listIterator(); i.hasNext() && inserted == false;) {
-				data leaf_data = i.next();
+			Data last_leaf = null;
+			for (ListIterator<Data> i = leaf_list.listIterator(); i.hasNext() && inserted == false;) {
+				Data leaf_data = i.next();
 				if (leaf_data.key == key) {
 					inserted = true;
 				} else if (leaf_data.key > key && (last_leaf == null || last_leaf.key < key)) {
@@ -215,10 +214,10 @@ public class BPlusTree {
 	}
 
 	private void splitLeaf(LeafNode original, LeafNode new_leaf) {
-		// split data between full leaf and a n empty leaf
+		// split Data between full leaf and a n empty leaf
 		// @input: full leaf, and new empty leaf
-		List<data> orig_list = original.getEntries();
-		List<data> new_list = new_leaf.getEntries();
+		List<Data> orig_list = original.getEntries();
+		List<Data> new_list = new_leaf.getEntries();
 		while (orig_list.size() > this.node_size / 2) {
 			new_list.add(0, orig_list.get(orig_list.size() - 1));
 			orig_list.remove(orig_list.size() - 1);
@@ -230,7 +229,7 @@ public class BPlusTree {
 	}
 
 	private void splitInner(TreeNode original, TreeNode new_leaf) {
-		// split data between full node and a n empty node
+		// split Data between full node and a n empty node
 		// @input: full node, and new empty node
 		List<Node> orig_list = original.getSons();
 		List<Node> new_list = new_leaf.getSons();
@@ -249,9 +248,9 @@ public class BPlusTree {
 		// @output: relative ID
 		int res = -1;
 		LeafNode leaf = getLeaf(key, transactionIndex);
-		List<data> data_list = leaf.getEntries();
-		for (Iterator<data> i = data_list.iterator(); i.hasNext();) {
-			data it_data = i.next();
+		List<Data> Data_list = leaf.getEntries();
+		for (Iterator<Data> i = Data_list.iterator(); i.hasNext();) {
+			Data it_data = i.next();
 			if (it_data.key < key) {
 				res = it_data.key;
 			}
@@ -269,9 +268,9 @@ public class BPlusTree {
 		this.lock.lockKeyRead(key, transactionIndex);
 		LeafNode curr_leaf = leaf;
 		while (curr_leaf != null) {
-			List<data> data_list = curr_leaf.getEntries();
-			for (Iterator<data> i = data_list.iterator(); i.hasNext();) {
-				data it_data = i.next();
+			List<Data> Data_list = curr_leaf.getEntries();
+			for (Iterator<Data> i = Data_list.iterator(); i.hasNext();) {
+				Data it_data = i.next();
 				if (it_data.key > key) {
 					if (it_data.key >= maxKey) {
 						return null;
@@ -297,103 +296,4 @@ public class BPlusTree {
 		return next(key - 1, leaf, maxKey, transactionIndex);
 	}
 
-}
-
-abstract class Node {
-	protected Node father;
-	protected int key;
-
-	public void setParent(Node parent) {
-		this.father = parent;
-	}
-
-	public int getKey() {
-		return key;
-	}
-
-	abstract boolean isLeaf();
-}
-
-class TreeNode extends Node {
-	private List<Node> sons;
-
-	public TreeNode(int key) {
-		this.key = key;
-		this.father = null;
-		this.sons = new ArrayList<Node>();
-	}
-
-	public int getSize() {
-		return sons.size();
-	}
-
-	public List<Node> getSons() {
-		return sons;
-	}
-
-	public boolean isLeaf() {
-		return false;
-	}
-
-}
-
-class LeafNode extends Node {
-	private List<data> entries;
-	private LeafNode prev;
-	private LeafNode next;
-
-	public LeafNode(int key) {
-		this.key = key;
-		this.father = null;
-		this.entries = new ArrayList<data>();
-		this.prev = null;
-		this.next = null;
-	}
-
-	public int getSize() {
-		return entries.size();
-	}
-
-	public List<data> getEntries() {
-		return entries;
-	}
-
-	public boolean isLeaf() {
-		return true;
-	}
-
-	public LeafNode getNext() {
-		LeafNode next = this.next;
-		while (next != null && next.getSize() == 0) {
-			next = next.next;
-		}
-		return next;
-	}
-
-	public void setNext(LeafNode next) {
-		this.next = next;
-	}
-
-	public LeafNode getPrev() {
-		LeafNode prev = this.prev;
-		while (prev != null && prev.getSize() == 0) {
-			prev = prev.prev;
-		}
-		return prev;
-	}
-
-	public void setPrev(LeafNode prev) {
-		this.prev = prev;
-	}
-
-}
-
-class data {
-	public int key;
-	public int rID;
-
-	public data(int key, int rID) {
-		this.key = key;
-		this.rID = rID;
-	}
 }
