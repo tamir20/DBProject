@@ -40,7 +40,7 @@ public enum Command {
     }
 
     public static List<String> getParameters(String line) {
-        List<String> result = null;
+        List result = Collections.EMPTY_LIST;
         Command command = Command.getCommand(line);
 
         if (!command.equals(END_TRANSACTION)){
