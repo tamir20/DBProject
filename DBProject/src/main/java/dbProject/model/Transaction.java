@@ -5,59 +5,64 @@ import java.util.List;
 
 public class Transaction {
 
-    private int id;
+	private int id;
 
-    private int runCount;
+	private int runCount;
 
-    private List<Operation> operationList;
+	private List<Operation> operationList;
 
-    public Transaction(int id) {
-        this.id = id;
-        operationList = new ArrayList<>();
-    }
+	public Transaction(int id) {
+		this.id = id;
+		operationList = new ArrayList<>();
+	}
 
-    public Operation get(int i){
-        return operationList.get(i);
-    }
+	public Operation get(int i) {
+		return operationList.get(i);
+	}
 
-    public int size(){
-        return operationList.size();
-    }
+	public Operation getByID(int id) {
+		for (int i = 0; i < this.operationList.size(); i++) {
+			if (this.operationList.get(i).getId() == id) {
+				return operationList.get(i);
+			}
+		}
+		return null;
+	}
 
-    public int getId() {
-        return id;
-    }
+	public int size() {
+		return operationList.size();
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public int getRunCount() {
-        return runCount;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setRunCount(int runCount) {
-        this.runCount = runCount;
-    }
+	public int getRunCount() {
+		return runCount;
+	}
 
-    public List<Operation> getOperationList() {
-        return operationList;
-    }
+	public void setRunCount(int runCount) {
+		this.runCount = runCount;
+	}
 
-    public void setOperationList(List<Operation> operationList) {
-        this.operationList = operationList;
-    }
+	public List<Operation> getOperationList() {
+		return operationList;
+	}
 
-    public void add(Operation operation) {
-        operationList.add(operation);
-    }
+	public void setOperationList(List<Operation> operationList) {
+		this.operationList = operationList;
+	}
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "runCount=" + runCount +
-                ", id=" + id +
-                ", operationList=" + operationList +
-                "}\n";
-    }
+	public void add(Operation operation) {
+		operationList.add(operation);
+	}
+
+	@Override
+	public String toString() {
+		return "Transaction{" + "runCount=" + runCount + ", id=" + id + ", operationList=" + operationList + "}\n";
+	}
 }

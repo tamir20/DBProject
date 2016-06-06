@@ -2,6 +2,8 @@ package dbProject.model;
 
 import org.junit.Test;
 
+import dbProject.model.Command;
+
 public class CommandTest {
     @Test
     public void getCommand() throws Exception {

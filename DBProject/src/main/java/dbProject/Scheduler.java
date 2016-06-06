@@ -94,7 +94,7 @@ public class Scheduler {
 		// try to remove the transaction from the sleeping transactions list
 		for (int i = 0; i < this.transactionsSleep.size(); i++) {
 			if ((this.transactionsSleep.get(i).get(0)).getTransaction() == index) {
-				abortedTransaction = getAbortedTransaction(this.transactions.get(i));
+				abortedTransaction = getAbortedTransaction(this.transactionsSleep.get(i));
 				this.transactionsSleep.remove(i);
 			}
 		}
