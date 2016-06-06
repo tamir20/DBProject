@@ -21,7 +21,7 @@ public class Scheduler {
 	private SchedulerType type;
 	private Random seedRand;
 
-	public Scheduler(List<List<Object>> transactions) {
+	public Scheduler(List<Transaction> transactions) {
 
 		this.transactions = new LinkedList<List<OperationDescription>>();
 		this.transactionsBackup = new LinkedList<List<OperationDescription>>();
@@ -36,7 +36,8 @@ public class Scheduler {
 		}
 		for (int i = 0; i < transactions.size(); i++) {
 			for (int j = 0; j < transactions.get(i).size(); j++) {
-				OperationDescription od = new OperationDescription(i, j, false);
+				OperationDescription od = new OperationDescription(transactions.get(i).getId(),
+						transactions.get(i).get(j).getId(), false);
 				this.transactions.get(i).add(od);
 				this.transactionsBackup.get(i).add(od);
 			}
@@ -62,7 +63,7 @@ public class Scheduler {
 
 		// add commit (release all key locks operation) to all transactions
 		for (int i = 0; i < transactions.size(); i++) {
-			OperationDescription od = new OperationDescription(i, COMMIT, false);
+			OperationDescription od = new OperationDescription(transactions.get(i).getId(), COMMIT, false);
 			this.transactions.get(i).add(od);
 			this.transactionsBackup.get(i).add(od);
 		}
