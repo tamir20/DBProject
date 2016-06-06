@@ -33,10 +33,7 @@ public class DatabaseManager {
 
         System.out.println(transactionList);
 
-        //todo:tamir change this to use the transactionList
-        List<List<Operation>> tempList = null;
-
-        scheduler = new Scheduler(tempList);
+        scheduler = new Scheduler(transactionList);
 
         scheduler.setSchedulerType(Scheduler.SchedulerType.SERIAL);
 

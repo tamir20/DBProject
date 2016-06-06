@@ -1,6 +1,6 @@
 package dbProject;
 
-import dbProject.model.Operation;
+import dbProject.model.Transaction;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,6 +11,7 @@ import java.util.Stack;
 
 public class Scheduler {
 	// after each operation, need to awake transactions and check for deadlock
+	public final int COMMIT = -1;
 
 	public static enum SchedulerType {
 		SERIAL, ROUND_ROBIN, PSUDO_RANDOM
@@ -22,7 +23,8 @@ public class Scheduler {
 	private SchedulerType type;
 	private Random seedRand;
 
-	public Scheduler(List<List<Operation>> transactions) {
+	public Scheduler(List<Transaction> transactions) {
+
 		this.transactions = new LinkedList<List<OperationDescription>>();
 		this.transactionsBackup = new LinkedList<List<OperationDescription>>();
 		this.transactionsSleep = new LinkedList<List<OperationDescription>>();
@@ -36,7 +38,8 @@ public class Scheduler {
 		}
 		for (int i = 0; i < transactions.size(); i++) {
 			for (int j = 0; j < transactions.get(i).size(); j++) {
-				OperationDescription od = new OperationDescription(i, j, false);
+				OperationDescription od = new OperationDescription(transactions.get(i).getId(),
+						transactions.get(i).get(j).getId(), false);
 				this.transactions.get(i).add(od);
 				this.transactionsBackup.get(i).add(od);
 			}
@@ -58,6 +61,13 @@ public class Scheduler {
 			if (transaction.isEmpty()) {
 				iter.remove();
 			}
+		}
+
+		// add commit (release all key locks operation) to all transactions
+		for (int i = 0; i < transactions.size(); i++) {
+			OperationDescription od = new OperationDescription(transactions.get(i).getId(), COMMIT, false);
+			this.transactions.get(i).add(od);
+			this.transactionsBackup.get(i).add(od);
 		}
 	}
 
@@ -165,13 +175,30 @@ public class Scheduler {
 	public void sleepTransaction(int transactiosIndex) {
 		// I assume the transactions have at least 1 operation
 
-		List<OperationDescription> transaction;
+		List<OperationDescription> transaction = null;
 		for (int i = 0; i < this.transactions.size(); i++) {
 			if ((this.transactions.get(i).get(0)).getTransaction() == transactiosIndex) {
 				transaction = this.transactions.remove(i);
-				this.transactionsSleep.add(transaction);
+
 			}
 		}
+
+		// get the last operation executed and return it to the transaction
+		// (because if we are here then the last operation failed). get the last
+		// operation from the backup
+
+		for (int i = 0; i < this.transactionsBackup.size(); i++) {
+			if (this.transactionsBackup.get(i).get(0).getTransaction() == transactiosIndex) {
+				int currentOperation = transaction.get(0).getOperation();
+				for (int j = 0; j < this.transactionsBackup.get(i).size() - 1; j++) {
+					if (currentOperation == this.transactionsBackup.get(i).get(j + 1).getOperation()) {
+						transaction.add(0, new OperationDescription(this.transactionsBackup.get(i).get(j)));
+					}
+				}
+			}
+		}
+
+		this.transactionsSleep.add(transaction);
 	}
 
 	public void awakeTransactions(Set<Integer> transactions) {
@@ -205,8 +232,8 @@ public class Scheduler {
 		// return the aborted transaction left to excecute, or if the
 		// transaction aborted before it started, return the original
 		// transaction
-		List<OperationDescription> result = new LinkedList<>();
-		Stack<OperationDescription> stack = new Stack<>();
+		List<OperationDescription> result = new LinkedList<OperationDescription>();
+		Stack<OperationDescription> stack = new Stack<OperationDescription>();
 		int currentOperation = transaction.get(0).getOperation();
 		Boolean operationFound = false;
 
@@ -228,7 +255,7 @@ public class Scheduler {
 			// transaction from the backup
 			for (int i = 0; i < this.transactionsBackup.size(); i++) {
 				if (this.transactionsBackup.get(i).get(0).getTransaction() == transaction.get(0).getTransaction()) {
-					result = new LinkedList<>(this.transactionsBackup.get(i));
+					result = new LinkedList<OperationDescription>(this.transactionsBackup.get(i));
 					return result;
 				}
 			}

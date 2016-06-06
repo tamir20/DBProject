@@ -10,8 +10,8 @@ import java.util.Set;
 
 public class LockManager {
 
-	List<LockKey> keyList;
-	List<LockPage> pageList;
+	private List<LockKey> keyList;
+	private List<LockPage> pageList;
 
 	public LockManager() {
 		this.keyList = new LinkedList<LockKey>();
@@ -74,6 +74,15 @@ public class LockManager {
 					this.keyList.remove(i);
 				}
 			}
+		}
+	}
+
+	public void unlockEverything(int transactionIndex) {
+		for (int i = 0; i < this.keyList.size(); i++) {
+			this.keyList.get(i).unlockEverything(transactionIndex);
+		}
+		for (int i = 0; i < this.pageList.size(); i++) {
+			this.pageList.get(i).unlockEverything(transactionIndex);
 		}
 	}
 

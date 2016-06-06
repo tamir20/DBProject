@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dbProject.model.Waiter;
-import dbProject.model.Waiter.LockType;
+import dbProject.model.*;
 
 public class Lock {
 	private int readLock;
@@ -19,8 +18,8 @@ public class Lock {
 	public Lock() {
 		this.readLock = 0;
 		this.writeLock = false;
-		this.holders = new LinkedList<Integer>();
-		this.waiters = new LinkedList<Waiter>();
+		this.holders = new LinkedList<>();
+		this.waiters = new LinkedList<>();
 	}
 
 	public void lockRead(int transactionIndex) throws LockException {
@@ -63,6 +62,12 @@ public class Lock {
 	}
 
 	public void lockWrite(int transactionIndex) throws LockException {
+		// could enter this code to upgrade read to write but it's forbidden
+		// if (this.readLock == 1 && this.holders.contains(transactionIndex) &&
+		// this.waiters.isEmpty()) {
+		// unlockRead(transactionIndex);
+		// lockWrite(transactionIndex);
+		// }
 		if (this.writeLock && this.holders.contains(transactionIndex)) {
 			// return true;
 			return;
@@ -140,6 +145,18 @@ public class Lock {
 			}
 		}
 		return transactions;
+	}
+
+	public void unlockEverything(int transactionIndex) {
+		this.unlockRead(transactionIndex);
+		this.unlockWrite(transactionIndex);
+
+		// delete from waiters list
+		for (int i = 0; i < this.waiters.size(); i++) {
+			if (this.waiters.get(i).getIndex() == transactionIndex) {
+				this.waiters.remove(i);
+			}
+		}
 	}
 
 	public List<Map<String, Integer>> getEdgesForFirstWaiter() {
