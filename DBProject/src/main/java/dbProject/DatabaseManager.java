@@ -1,9 +1,8 @@
 package dbProject;
 
-import dbProject.io.Logger;
+import dbProject.io.Output;
 import dbProject.io.Parser;
 import dbProject.io.ParserImpl;
-import dbProject.model.Operation;
 import dbProject.model.Transaction;
 
 import java.util.HashSet;
@@ -14,7 +13,7 @@ public class DatabaseManager {
 
     private Parser parser;
 
-    private Logger logger;
+    private Output output;
 
     private Scheduler scheduler;
 

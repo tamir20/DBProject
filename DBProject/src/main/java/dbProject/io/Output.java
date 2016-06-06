@@ -2,7 +2,7 @@ package dbProject.io;
 
 /**
  * This class handles the application's output to the LOG file*/
-public interface Logger {
+public interface Output {
 
     void writeAction(int transactionId, int actionId, int transactionRunCount);
 
