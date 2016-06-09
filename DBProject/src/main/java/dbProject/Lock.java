@@ -62,12 +62,15 @@ public class Lock {
 	}
 
 	public void lockWrite(int transactionIndex) throws LockException {
-		// could enter this code to upgrade read to write but it's forbidden
-		// if (this.readLock == 1 && this.holders.contains(transactionIndex) &&
-		// this.waiters.isEmpty()) {
-		// unlockRead(transactionIndex);
-		// lockWrite(transactionIndex);
-		// }
+		// this part is for letting a transaction get write key if it has only
+		// read key (and it is the only transaction trying to lock this key).
+		// For example, a transaction searches for key (acquire read key), then
+		// deletes it (trying to acquire write key).
+		if (this.readLock == 1 && this.holders.contains(transactionIndex) && this.waiters.isEmpty()) {
+			unlockRead(transactionIndex);
+			lockWrite(transactionIndex);
+		}
+
 		if (this.writeLock && this.holders.contains(transactionIndex)) {
 			// return true;
 			return;

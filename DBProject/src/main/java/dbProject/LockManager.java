@@ -3,6 +3,7 @@ package dbProject;
 import dbProject.model.LockPage;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,11 +79,19 @@ public class LockManager {
 	}
 
 	public void unlockEverything(int transactionIndex) {
-		for (int i = 0; i < this.keyList.size(); i++) {
-			this.keyList.get(i).unlockEverything(transactionIndex);
+		for (Iterator<LockKey> iter = keyList.iterator(); iter.hasNext();) {
+			LockKey lock = iter.next();
+			lock.unlockEverything(transactionIndex);
+			if(!lock.inUse()){
+				iter.remove();
+			}
 		}
-		for (int i = 0; i < this.pageList.size(); i++) {
-			this.pageList.get(i).unlockEverything(transactionIndex);
+		for (Iterator<LockPage> iter = pageList.iterator(); iter.hasNext();) {
+			LockPage lock = iter.next();
+			lock.unlockEverything(transactionIndex);
+			if(!lock.inUse()){
+				iter.remove();
+			}
 		}
 	}
 

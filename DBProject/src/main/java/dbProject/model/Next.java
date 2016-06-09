@@ -4,4 +4,5 @@ public class Next {
 
 	public LeafNode page;
 	public int key;
+	public int rid;
 }

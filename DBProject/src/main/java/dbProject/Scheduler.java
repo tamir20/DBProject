@@ -250,9 +250,12 @@ public class Scheduler {
 			}
 		}
 
-		if (stack.isEmpty()) {
+		if (stack.isEmpty() || stack.size() == 1) {
 			// if there is not operation which is already done, return the
-			// transaction from the backup
+			// transaction from the backup. Also, if the transaction has
+			// executed only 1 operation (means that this single operation
+			// failed) then we still need to return the transaction from the
+			// backup
 			for (int i = 0; i < this.transactionsBackup.size(); i++) {
 				if (this.transactionsBackup.get(i).get(0).getTransaction() == transaction.get(0).getTransaction()) {
 					result = new LinkedList<OperationDescription>(this.transactionsBackup.get(i));
@@ -260,6 +263,9 @@ public class Scheduler {
 				}
 			}
 		}
+
+		// because we don't need the failed operation
+		stack.pop();
 
 		while (!stack.isEmpty()) {
 			// get the already done operations in reverse order and in aborted

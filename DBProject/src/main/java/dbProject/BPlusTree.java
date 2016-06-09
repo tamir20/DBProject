@@ -85,23 +85,24 @@ public class BPlusTree {
 		return res;
 	}
 
-	public boolean removeData(int key, int transactionIndex) throws LockException {
+	public int removeData(int key, int transactionIndex) throws LockException {
 		// remove Data from the tree
 		// @input: key number
-		// @output: true if Data removed from the tree false if not in there.
+		// @output: the rid of the removed data, or -1 if fail
 		this.lock.lockKeyWrite(key, transactionIndex);
 		LeafNode leaf = getLeaf(key, transactionIndex);
 		for (ListIterator<Data> i = leaf.getEntries().listIterator(); i.hasNext();) {
 			Data dat = i.next();
 			if (dat.getKey() == key) {
+				int rid = dat.getrID();
 				i.previous();
 				i.remove();
 				this.lock.unlockPageRead(leaf, transactionIndex);
-				return true;
+				return rid;
 			}
 		}
 		this.lock.unlockPageRead(leaf, transactionIndex);
-		return false;
+		return -1;
 	}
 
 	public List<Integer> range_search(int minKey, int maxKey, int transactionIndex) throws LockException {
@@ -112,7 +113,7 @@ public class BPlusTree {
 			return list;
 		}
 		while (next != null) {
-			list.add(next.key);
+			list.add(next.rid);
 			prevNext = next;
 			next = next(next.key, next.page, maxKey, transactionIndex);
 		}
@@ -224,7 +225,7 @@ public class BPlusTree {
 			new_list.add(0, orig_list.get(orig_list.size() - 1));
 			orig_list.remove(orig_list.size() - 1);
 		}
-//		original.key = orig_list.get(orig_list.size() - 1).key;
+		// original.key = orig_list.get(orig_list.size() - 1).key;
 		original.setKey(orig_list.get(orig_list.size() - 1).getKey());
 		new_leaf.setKey(new_list.get(new_list.size() - 1).getKey());
 		original.setNext(new_leaf);
@@ -280,6 +281,7 @@ public class BPlusTree {
 					}
 					Next res = new Next();
 					res.key = it_data.getKey();
+					res.rid = it_data.getrID();
 					res.page = curr_leaf;
 					return res;
 				}
