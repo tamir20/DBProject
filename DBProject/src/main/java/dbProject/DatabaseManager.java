@@ -208,7 +208,8 @@ public class DatabaseManager {
 				for (Iterator<Integer> iter = this.deletedRidLists.get(transactionIndex).iterator(); iter.hasNext();) {
 					int ridToDelete = iter.next();
 					this.disk.freeRecord(ridToDelete);
-					System.out.println("freed rid " + ridToDelete + " while committing transaction " + transactionIndex);
+					System.out
+							.println("freed rid " + ridToDelete + " while committing transaction " + transactionIndex);
 				}
 			}
 
@@ -217,7 +218,9 @@ public class DatabaseManager {
 
 			// check for deadlocks
 			if (this.lockManager.recommendAbort() != -1) {
-				this.scheduler.abortTransaction(this.lockManager.recommendAbort());
+				int abortedTransaction = this.lockManager.recommendAbort();
+				this.scheduler.abortTransaction(abortedTransaction);
+				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
 			}
 		}
 	}
