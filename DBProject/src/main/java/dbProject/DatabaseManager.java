@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 public class DatabaseManager {
@@ -35,10 +36,15 @@ public class DatabaseManager {
 	public DatabaseManager() {
 		// init everything
 		this.parser = new ParserImpl();
-		this.lockManager = new LockManager();
+		this.lockManager = new LockManager(new Random(0));
 		this.tree = new BPlusTree(NODE_SIZE, this.lockManager);
 		this.disk = new Disk();
 		this.deletedRidLists = new HashMap<Integer, Set<Integer>>();
+	}
+
+	public void setSeed(long seed) {
+		this.lockManager = new LockManager(new Random(seed));
+		this.scheduler.setSeed(seed);
 	}
 
 	public void run() {
@@ -53,6 +59,7 @@ public class DatabaseManager {
 
 		scheduler = new Scheduler(transactionList);
 
+		// TODO: set seed for the database with "setSeed"
 		scheduler.setSchedulerType(Scheduler.SchedulerType.SERIAL);
 
 		while (scheduler.hasNext()) {
@@ -65,7 +72,7 @@ public class DatabaseManager {
 					List<String> args = transactionList.get(od.getTransaction()).getByID(od.getOperation()).getArgs();
 					if (cmd == Command.ALLOCATE_RECORD) {
 						int rid = this.disk.allocateRecord(Integer.parseInt(args.get(0)), args.get(1), args.get(2));
-						System.out.println("alocatet record with rid = " + rid);
+						System.out.println("allocated record with rid = " + rid);
 					}
 					if (cmd == Command.INSERT) {
 						// TODO: change rid = 1 to the rid extracted by the
@@ -85,28 +92,7 @@ public class DatabaseManager {
 							}
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
-							System.out.println("transaction " + transactionIndex + " is waiting");
-						}
-					}
-					if (cmd == Command.SEARCH) {
-						int rid = -1;
-						try {
-							// TODO: change key = 2 to the key extracted by the
-							// parser
-							rid = this.tree.getValue(2, transactionIndex);
-						} catch (LockException e) {
-							this.scheduler.sleepTransaction(transactionIndex);
-							System.out.println("transaction " + transactionIndex + " is waiting");
-						}
-						if (rid < 0) {
-							System.out.println("no key found, returning 0");
-						} else {
-							Record record = this.disk.readRecord(rid);
-							if (record != null) {
-								System.out.println("v1: " + record.getV1() + ", v2: " + record.getV2());
-							} else {
-								System.out.println("the rid retrieved from the tree cant be found on the disk");
-							}
+							System.out.println("transaction " + transactionIndex + " is waiting while INSERT");
 						}
 					}
 					if (cmd == Command.DELETE) {
@@ -130,10 +116,36 @@ public class DatabaseManager {
 							}
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
-							System.out.println("transaction " + transactionIndex + " is waiting");
+							System.out.println("transaction " + transactionIndex + " is waiting while DELETE");
+						}
+					}
+					if (cmd == Command.SEARCH) {
+						Boolean successfullSearch = true;
+						int rid = -1;
+						try {
+							// TODO: change key = 2 to the key extracted by the
+							// parser
+							rid = this.tree.getValue(2, transactionIndex);
+						} catch (LockException e) {
+							this.scheduler.sleepTransaction(transactionIndex);
+							System.out.println("transaction " + transactionIndex + " is waiting while SEARCH");
+							successfullSearch = false;
+						}
+						if (successfullSearch) {
+							if (rid < 0) {
+								System.out.println("no key found, returning 0");
+							} else {
+								Record record = this.disk.readRecord(rid);
+								if (record != null) {
+									System.out.println("v1: " + record.getV1() + ", v2: " + record.getV2());
+								} else {
+									System.out.println("the rid retrieved from the tree cant be found on the disk");
+								}
+							}
 						}
 					}
 					if (cmd == Command.RANGE_SEARCH) {
+						Boolean successfullRangeSearch = true;
 						int min = Integer.parseInt(args.get(0));
 						int max = Integer.parseInt(args.get(1));
 						List<Integer> rids = null;
@@ -141,29 +153,32 @@ public class DatabaseManager {
 							rids = this.tree.range_search(min, max, transactionIndex);
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
-							System.out.println("transaction " + transactionIndex + " is waiting");
+							System.out.println("transaction " + transactionIndex + " is waiting while RANGE SEARCH");
+							successfullRangeSearch = false;
 						}
-						if (rids == null) {
-							System.out.println("");
-						} else {
-							String result = "";
-							// TODO: change maxStrings to the maxStrings
-							// extracted
-							// by the parser
-							int maxStrings = 2;
-							if (maxStrings > rids.size()) {
-								maxStrings = rids.size();
-							}
-							for (int i = 0; i < maxStrings; i++) {
-								Record rec = this.disk.readRecord(rids.get(i));
-								if (rec != null) {
-									if (i != 0) {
-										result += ", ";
-									}
-									result += rec.getV1() + " " + rec.getV2();
+						if (successfullRangeSearch) {
+							if (rids == null) {
+								System.out.println("");
+							} else {
+								String result = "";
+								// TODO: change maxStrings to the maxStrings
+								// extracted
+								// by the parser
+								int maxStrings = 2;
+								if (maxStrings > rids.size()) {
+									maxStrings = rids.size();
 								}
+								for (int i = 0; i < maxStrings; i++) {
+									Record rec = this.disk.readRecord(rids.get(i));
+									if (rec != null) {
+										if (i != 0) {
+											result += ", ";
+										}
+										result += rec.getV1() + " " + rec.getV2();
+									}
+								}
+								System.out.println(result);
 							}
-							System.out.println(result);
 						}
 					}
 				}
@@ -204,6 +219,8 @@ public class DatabaseManager {
 			if (od.getOperation() == -1) {
 				this.lockManager.unlockEverything(transactionIndex);
 
+				System.out.println("transaction " + transactionIndex + " is committing");
+
 				// check if there are disk records to free and free them
 				for (Iterator<Integer> iter = this.deletedRidLists.get(transactionIndex).iterator(); iter.hasNext();) {
 					int ridToDelete = iter.next();
@@ -213,12 +230,16 @@ public class DatabaseManager {
 				}
 			}
 
+			if (od.getOperation() == this.scheduler.getFirstOperation(transactionIndex) && od.isAborted()) {
+				this.lockManager.unlockEverything(transactionIndex);
+			}
+
 			// awake transactions freed by the last transaction
 			this.scheduler.awakeTransactions(this.lockManager.awakeTransactions());
 
 			// check for deadlocks
-			if (this.lockManager.recommendAbort() != -1) {
-				int abortedTransaction = this.lockManager.recommendAbort();
+			if (this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions()) != -1) {
+				int abortedTransaction = this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions());
 				this.scheduler.abortTransaction(abortedTransaction);
 				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
 			}

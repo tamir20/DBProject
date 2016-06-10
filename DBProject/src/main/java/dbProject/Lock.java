@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import dbProject.Scheduler.SchedulerType;
 import dbProject.model.*;
 
 public class Lock {
@@ -115,8 +116,39 @@ public class Lock {
 
 	public Set<Integer> awakeTransactions() {
 		Set<Integer> transactions = new HashSet<Integer>();
-		// if there are still holders or no waiters then there are no
-		// transactions to awake
+
+		if (!this.holders.isEmpty() && !this.waiters.isEmpty()) {
+			if (this.writeLock) {
+				return transactions;
+			}
+
+			// in case that a write lock of the same transaction is blocked by a
+			// read lock
+			if (this.readLock == 1 && this.holders.contains(this.waiters.get(0).getIndex())
+					&& this.waiters.get(0).getType() == LockType.WRITE) {
+				this.readLock = 0;
+				this.writeLock = true;
+				transactions.add(this.waiters.get(0).getIndex());
+				this.waiters.remove(0);
+				return transactions;
+			}
+
+			// in case that a write locked is cancelled (due to aborted
+			// transaction) and now we can add more readers to the lock
+			Boolean writerFound = false;
+			while (!this.waiters.isEmpty() && !writerFound) {
+				Waiter waitingTransaction = this.waiters.get(0);
+				if (waitingTransaction.getType() == LockType.READ) {
+					this.waiters.remove(0);
+					if (!this.holders.contains(waitingTransaction.getIndex())) {
+						this.readLock++;
+					}
+				} else {
+					writerFound = true;
+				}
+			}
+		}
+
 		if (!this.holders.isEmpty() || this.waiters.isEmpty()) {
 			return transactions;
 		}
@@ -126,13 +158,24 @@ public class Lock {
 		Waiter waiter = this.waiters.get(0);
 		if (waiter.getType() == LockType.WRITE) {
 			writerFound = true;
+			// if this is the first writer then i will lock the key for it, so
+			// need to set writeLock = true
+			this.writeLock = true;
+		} else {
+			// if this is a reader, still need to raise the counter of the
+			// transactions
+			this.readLock++;
 		}
 		// anyway we add the first writer, and this will be the only transaction
 		// to hold the lock
 		this.holders.add(waiter.getIndex());
 		transactions.add(waiter.getIndex());
 		this.waiters.remove(0);
-		waiter = this.waiters.get(0);
+		if (this.waiters.isEmpty()) {
+			waiter = null;
+		} else {
+			waiter = this.waiters.get(0);
+		}
 
 		// for the rest of the transactions, we awake them only if they are read
 		// (and the first transaction was read too), and stop at the first write
@@ -141,10 +184,17 @@ public class Lock {
 			if (waiter.getType() == LockType.WRITE) {
 				writerFound = true;
 			} else {
-				this.holders.add(waiter.getIndex());
+				if (!this.holders.contains(waiter.getIndex())) {
+					this.readLock++;
+					this.holders.add(waiter.getIndex());
+				}
 				transactions.add(waiter.getIndex());
 				this.waiters.remove(0);
-				waiter = this.waiters.get(0);
+				if (this.waiters.isEmpty()) {
+					waiter = null;
+				} else {
+					waiter = this.waiters.get(0);
+				}
 			}
 		}
 		return transactions;
@@ -162,17 +212,19 @@ public class Lock {
 		}
 	}
 
-	public List<Map<String, Integer>> getEdgesForFirstWaiter() {
+	public List<Map<String, Integer>> getEdgesForAllWaiters() {
 		if (this.waiters.isEmpty() || this.holders.isEmpty()) {
 			return null;
 		}
 		List<Map<String, Integer>> edges = new LinkedList<Map<String, Integer>>();
-		int waitingTransaction = this.waiters.get(0).getIndex();
-		for (int i = 0; i < this.holders.size(); i++) {
-			Map<String, Integer> edge = new HashMap<String, Integer>();
-			edge.put("from", waitingTransaction);
-			edge.put("to", this.holders.get(i).intValue());
-			edges.add(edge);
+		for (int k = 0; k < this.waiters.size(); k++) {
+			int waitingTransaction = this.waiters.get(k).getIndex();
+			for (int i = 0; i < this.holders.size(); i++) {
+				Map<String, Integer> edge = new HashMap<String, Integer>();
+				edge.put("from", this.holders.get(i).intValue());
+				edge.put("to", waitingTransaction);
+				edges.add(edge);
+			}
 		}
 		return edges;
 	}

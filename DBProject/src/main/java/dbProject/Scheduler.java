@@ -2,6 +2,7 @@ package dbProject;
 
 import dbProject.model.Transaction;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +87,7 @@ public class Scheduler {
 		// try to remove the transaction from the transactions list
 		for (int i = 0; i < this.transactions.size(); i++) {
 			if ((this.transactions.get(i).get(0)).getTransaction() == index) {
-				abortedTransaction = getAbortedTransaction(this.transactions.get(i));
+				abortedTransaction = getAbortedTransaction(this.transactions.get(i), false);
 				this.transactions.remove(i);
 			}
 		}
@@ -94,7 +95,7 @@ public class Scheduler {
 		// try to remove the transaction from the sleeping transactions list
 		for (int i = 0; i < this.transactionsSleep.size(); i++) {
 			if ((this.transactionsSleep.get(i).get(0)).getTransaction() == index) {
-				abortedTransaction = getAbortedTransaction(this.transactionsSleep.get(i));
+				abortedTransaction = getAbortedTransaction(this.transactionsSleep.get(i), true);
 				this.transactionsSleep.remove(i);
 			}
 		}
@@ -145,7 +146,7 @@ public class Scheduler {
 			}
 		}
 
-		if (result.getOperation() == 0 && result.isAborted()) {
+		if (result.getOperation() == getFirstOperation(result.getTransaction()) && result.isAborted()) {
 			// if the aborted transaction has ended, rerun the original
 			// transaction from the backup
 			for (int i = 0; i < this.transactionsBackup.size(); i++) {
@@ -228,7 +229,7 @@ public class Scheduler {
 		}
 	}
 
-	private List<OperationDescription> getAbortedTransaction(List<OperationDescription> transaction) {
+	private List<OperationDescription> getAbortedTransaction(List<OperationDescription> transaction, Boolean isSleep) {
 		// return the aborted transaction left to excecute, or if the
 		// transaction aborted before it started, return the original
 		// transaction
@@ -264,14 +265,36 @@ public class Scheduler {
 			}
 		}
 
-		// because we don't need the failed operation
-		stack.pop();
+		if (!isSleep) {
+			// if the transaction came from sleep then we need the last
+			// operation. Else, it was the operation which failed, so we drop it
+			stack.pop();
+		}
 
 		while (!stack.isEmpty()) {
 			// get the already done operations in reverse order and in aborted
 			// mode
 			OperationDescription operation = stack.pop();
 			result.add(new OperationDescription(operation.getTransaction(), operation.getOperation(), true));
+		}
+		return result;
+	}
+
+	public int getFirstOperation(int transactionIndex) {
+		for (int i = 0; i < this.transactionsBackup.size(); i++) {
+			if (this.transactionsBackup.get(i).get(0).getTransaction() == transactionIndex) {
+				return this.transactionsBackup.get(i).get(0).getOperation();
+			}
+		}
+		return 0;
+	}
+
+	public Set<Integer> getAbortingTransactions() {
+		Set<Integer> result = new HashSet<>();
+		for (int i = 0; i < this.transactions.size(); i++) {
+			if (this.transactions.get(i).get(0).isAborted()) {
+				result.add(this.transactions.get(i).get(0).getTransaction());
+			}
 		}
 		return result;
 	}

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 public class LockManager {
@@ -14,9 +15,14 @@ public class LockManager {
 	private List<LockKey> keyList;
 	private List<LockPage> pageList;
 
-	public LockManager() {
+	// for pseudo random scheduler type, need to get the random variable (with
+	// seed) from the constructor
+	private Random random;
+
+	public LockManager(Random random) {
 		this.keyList = new LinkedList<LockKey>();
 		this.pageList = new LinkedList<LockPage>();
+		this.random = random;
 	}
 
 	public void lockPageRead(Object page, int transactionIndex) throws LockException {
@@ -82,14 +88,14 @@ public class LockManager {
 		for (Iterator<LockKey> iter = keyList.iterator(); iter.hasNext();) {
 			LockKey lock = iter.next();
 			lock.unlockEverything(transactionIndex);
-			if(!lock.inUse()){
+			if (!lock.inUse()) {
 				iter.remove();
 			}
 		}
 		for (Iterator<LockPage> iter = pageList.iterator(); iter.hasNext();) {
 			LockPage lock = iter.next();
 			lock.unlockEverything(transactionIndex);
-			if(!lock.inUse()){
+			if (!lock.inUse()) {
 				iter.remove();
 			}
 		}
@@ -166,31 +172,35 @@ public class LockManager {
 		return transactions;
 	}
 
-	public int recommendAbort() {
+	public int recommendAbort(Set<Integer> aborting) {
 		// find cycle in the lock graph and return one of its transactions
 
-		Graph g = new Graph();
+		Graph g = new Graph(this.random);
 		for (int i = 0; i < this.keyList.size(); i++) {
-			List<Map<String, Integer>> edges = this.keyList.get(i).getEdgesForFirstWaiter();
+			List<Map<String, Integer>> edges = this.keyList.get(i).getEdgesForAllWaiters();
 			if (edges != null) {
 				for (int j = 0; j < edges.size(); j++) {
 					int from = edges.get(j).get("from");
 					int to = edges.get(j).get("to");
-					g.addEdge(from, to);
+					if (!aborting.contains(from) && !aborting.contains(to)) {
+						g.addEdge(from, to);
+					}
 				}
 			}
 		}
 		for (int i = 0; i < this.pageList.size(); i++) {
-			List<Map<String, Integer>> edges = this.pageList.get(i).getEdgesForFirstWaiter();
+			List<Map<String, Integer>> edges = this.pageList.get(i).getEdgesForAllWaiters();
 			if (edges != null) {
 				for (int j = 0; j < edges.size(); j++) {
 					int from = edges.get(j).get("from");
 					int to = edges.get(j).get("to");
-					g.addEdge(from, to);
+					if (!aborting.contains(from) && !aborting.contains(to)) {
+						g.addEdge(from, to);
+					}
 				}
 			}
 		}
-		return g.findTransactionInCycle();
+		return g.findRandomTransactionInCycle();
 	}
 
 }
