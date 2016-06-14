@@ -1,6 +1,6 @@
 package dbProject;
 
-import dbProject.io.Logger;
+import dbProject.io.Output;
 import dbProject.io.Parser;
 import dbProject.io.ParserImpl;
 import dbProject.model.Command;
@@ -21,7 +21,7 @@ public class DatabaseManager {
 
 	private Parser parser;
 
-	private Logger logger;
+	private Output output;
 
 	private Scheduler scheduler;
 
