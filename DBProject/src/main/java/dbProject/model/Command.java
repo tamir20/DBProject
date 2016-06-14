@@ -32,7 +32,7 @@ public enum Command {
     public static Command getCommand(String line){
         Command result = null;
         for (Command command : Command.values()){
-            if (command.getStartsWith().equals(line.substring(0,command.getStartsWith().length()))){
+            if (command.getStartsWith().equals(line.substring(2, 2+command.getStartsWith().length()))){
                 result = command;
             }
         }
@@ -40,13 +40,29 @@ public enum Command {
     }
 
     public static List<String> getParameters(String line) {
-        List<String> result = null;
+        List result;
         Command command = Command.getCommand(line);
 
-        if (!command.equals(END_TRANSACTION)){
-            String parametersCSV = line.substring(command.getParamIndex(), line.length()-1);;
-            result = Arrays.asList(parametersCSV.split(","));
+        int endIdx;
+        int startIdx = command.getParamIndex()+2;
+        if (command.equals(ALLOCATE_RECORD) || command.equals(SEARCH)) {
+            endIdx = line.lastIndexOf("^")-1;
+        } else {
+            endIdx = line.length()-3;
         }
+        if (line.endsWith(";")) {
+            endIdx--;
+        }
+
+        //todo:omar extraxt rid parameter
+        result = extractCSVtoList(line, startIdx, endIdx);
+        return result;
+    }
+
+    private static List extractCSVtoList(String line, int startIdx, int endIdx) {
+        List result;
+        String parametersCSV = line.substring(startIdx, endIdx);
+        result = Arrays.asList(parametersCSV.split(","));
         return result;
     }
 }
