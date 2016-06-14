@@ -31,7 +31,7 @@ public enum Command {
     public static Command getCommand(String line){
         Command result = null;
         for (Command command : Command.values()){
-            if (command.getStartsWith().equals(line.substring(2, 2+command.getStartsWith().length()))){
+            if (command.getStartsWith().equals(line.substring(line.indexOf(" ")+ 1, line.indexOf(" ")+ 1 + command.getStartsWith().length()))){
                 result = command;
             }
         }
@@ -44,7 +44,7 @@ public enum Command {
         String rid = null;
 
         int endIdx;
-        int startIdx = command.getParamIndex()+2;
+        int startIdx = line.indexOf(" ")+ 1 + command.getParamIndex();
 
         if (command.equals(ALLOCATE_RECORD) || command.equals(SEARCH)) {
             result.addAll(extractCSVtoList(line, startIdx, line.lastIndexOf("^")-1));

@@ -13,16 +13,13 @@ public class ParserImpl implements Parser {
 
     private static final String FILE_NAME = "transactions.dat";
     private int operationCount = 0;
-    private int transactionCount = 0;
-    private boolean newTransaction = true;
 
     @Override
     public ParsedCommands parse() {
 
         BufferedReader br = null;
         ParsedCommands parsedCommands = new ParsedCommands(null, SchedulerType.SERIAL, 345);
-        List<Transaction> list = new ArrayList<>();
-        newTransaction = true;
+        HashMap<Integer ,Transaction> list = new LinkedHashMap<>();
 
         try {
 
@@ -49,8 +46,8 @@ public class ParserImpl implements Parser {
             }
         }
 
-        parsedCommands.setTransactions(list);
-        //todo:omar parse sched type and seed
+        parsedCommands.setTransactions(new ArrayList<>(list.values()));
+
         return parsedCommands;
     }
 
@@ -67,21 +64,22 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void handleLine(List<Transaction> list, String line) {
+    private void handleLine(HashMap<Integer, Transaction> transactionHashMap, String line) {
 
         if(!line.isEmpty()) {
-            if (newTransaction == true) {
-                newTransaction = false;
-                Transaction transaction = new Transaction(generateTransactionId());
-                list.add(transaction);
-            }
-            if (line.endsWith(";")) {
-                newTransaction = true;
-            }
             Operation operation = parseLine(line);
-            list.get(list.size()- 1).add(operation);
+
+            Integer transactionId = getTransactionId(line);
+            if (!transactionHashMap.containsKey(transactionId)){
+                transactionHashMap.put(transactionId,new Transaction(transactionId));
+            }
+            transactionHashMap.get(transactionId).add(operation);
 
         }
+    }
+
+    private Integer getTransactionId(String line) {
+        return Integer.valueOf(line.split(" ")[0]);
     }
 
     private Operation parseLine(String line) {
@@ -92,8 +90,5 @@ public class ParserImpl implements Parser {
 
     private int generateOperationId() {
         return operationCount++;
-    }
-    private int generateTransactionId() {
-        return transactionCount++;
     }
 }
