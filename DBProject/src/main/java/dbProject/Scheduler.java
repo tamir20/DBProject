@@ -1,5 +1,6 @@
 package dbProject;
 
+import dbProject.model.SchedulerType;
 import dbProject.model.Transaction;
 
 import java.util.HashSet;
@@ -14,11 +15,7 @@ public class Scheduler {
 	// after each operation, need to awake transactions and check for deadlock
 	public final int COMMIT = -1;
 
-	public static enum SchedulerType {
-		SERIAL, ROUND_ROBIN, PSUDO_RANDOM
-	}
-
-	private List<List<OperationDescription>> transactionsBackup;
+    private List<List<OperationDescription>> transactionsBackup;
 	private List<List<OperationDescription>> transactions;
 	private List<List<OperationDescription>> transactionsSleep;
 	private SchedulerType type;

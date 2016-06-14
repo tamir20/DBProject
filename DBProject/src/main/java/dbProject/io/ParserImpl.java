@@ -1,8 +1,6 @@
 package dbProject.io;
 
-import dbProject.model.Command;
-import dbProject.model.Operation;
-import dbProject.model.Transaction;
+import dbProject.model.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,9 +17,10 @@ public class ParserImpl implements Parser {
     private boolean newTransaction = true;
 
     @Override
-    public List<Transaction> parse() {
+    public ParsedCommands parse() {
 
         BufferedReader br = null;
+        ParsedCommands parsedCommands;
         List<Transaction> list = new ArrayList<>();
         newTransaction = true;
 
@@ -47,11 +46,11 @@ public class ParserImpl implements Parser {
             }
         }
 
-        return list;
+        //todo:omar parse sched type and seed
+        return new ParsedCommands(list, SchedulerType.SERIAL, 345);
     }
 
     private void handleLine(List<Transaction> list, String line) {
-        //todo:omar implement this
         if (newTransaction == true) {
             newTransaction = false;
             Transaction transaction = new Transaction(generateTransactionId());

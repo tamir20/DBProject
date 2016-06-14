@@ -3,9 +3,7 @@ package dbProject;
 import dbProject.io.Output;
 import dbProject.io.Parser;
 import dbProject.io.ParserImpl;
-import dbProject.model.Command;
-import dbProject.model.Record;
-import dbProject.model.Transaction;
+import dbProject.model.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,13 +41,14 @@ public class DatabaseManager {
 	}
 
 	public void setSeed(long seed) {
-		this.lockManager = new LockManager(new Random(seed));
-		this.scheduler.setSeed(seed);
+
 	}
 
 	public void run() {
 
-		List<Transaction> transactionList = parser.parse();
+		ParsedCommands parsedCommands = parser.parse();
+
+        List<Transaction> transactionList = parsedCommands.getTransactions();
 
 		for (int i = 0; i < transactionList.size(); i++) {
 			this.deletedRidLists.put(transactionList.get(i).getId(), new HashSet<Integer>());
@@ -57,10 +56,7 @@ public class DatabaseManager {
 
 		System.out.println(transactionList);
 
-		scheduler = new Scheduler(transactionList);
-
-		// TODO: set seed for the database with "setSeed"
-		scheduler.setSchedulerType(Scheduler.SchedulerType.SERIAL);
+        initialize(parsedCommands, transactionList);
 
 		while (scheduler.hasNext()) {
 			OperationDescription od = scheduler.next();
@@ -245,4 +241,11 @@ public class DatabaseManager {
 			}
 		}
 	}
+
+    private void initialize(ParsedCommands parsedCommands, List<Transaction> transactionList) {
+        scheduler = new Scheduler(transactionList);
+        scheduler.setSchedulerType(parsedCommands.getSchedulerType());
+        scheduler.setSeed(parsedCommands.getSeed());
+        lockManager = new LockManager(new Random(parsedCommands.getSeed()));
+    }
 }

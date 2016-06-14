@@ -1,5 +1,6 @@
 package dbProject.io;
 
+import dbProject.model.ParsedCommands;
 import dbProject.model.Transaction;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface Parser {
      *
      * @return a list of transactions
      */
-    List<Transaction> parse();
+    ParsedCommands parse();
 
 }
