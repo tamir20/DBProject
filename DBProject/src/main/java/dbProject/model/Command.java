@@ -40,10 +40,10 @@ public enum Command {
     }
 
     public static List<String> getParameters(String line) {
-        List result = Collections.EMPTY_LIST;
+        List result;
         Command command = Command.getCommand(line);
 
-        int endIdx = line.length()-3;
+        int endIdx;
         int startIdx = command.getParamIndex()+2;
         if (command.equals(ALLOCATE_RECORD) || command.equals(SEARCH)) {
             endIdx = line.lastIndexOf("^")-1;
