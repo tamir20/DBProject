@@ -59,7 +59,7 @@ public class ParserImpl implements Parser {
      */
     private void handleSettings(String line, ParsedCommands parsedCommands) {
         List<String> parameters = Arrays.asList(line.split(" "));
-        parsedCommands.setSchedulerType(SchedulerType.values()[Integer.valueOf(parameters.get(0))]);
+        parsedCommands.setSchedulerType(SchedulerType.values()[Integer.valueOf(parameters.get(0))-1]);
 
         if (Integer.valueOf(parameters.get(0)).equals(2)){
             Double doubleSeed = Double.valueOf(parameters.get(1)) * 1000;

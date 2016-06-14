@@ -1,5 +1,5 @@
 package dbProject.model;
 
 public enum SchedulerType {
-    SERIAL, ROUND_ROBIN, PSUDO_RANDOM
+    SERIAL, PSUDO_RANDOM, ROUND_ROBIN
 }
