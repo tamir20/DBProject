@@ -39,4 +39,13 @@ public class ParsedCommands {
     public void setSeed(long seed) {
         this.seed = seed;
     }
+
+    @Override
+    public String toString() {
+        return "ParsedCommands{" +
+                "transactions=" + transactions +
+                ", schedulerType=" + schedulerType +
+                ", seed=" + seed +
+                '}';
+    }
 }

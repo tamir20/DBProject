@@ -5,9 +5,9 @@ import dbProject.model.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
+import static sun.security.krb5.Confounder.longValue;
 
 public class ParserImpl implements Parser {
 
@@ -20,7 +20,7 @@ public class ParserImpl implements Parser {
     public ParsedCommands parse() {
 
         BufferedReader br = null;
-        ParsedCommands parsedCommands;
+        ParsedCommands parsedCommands = new ParsedCommands(null, SchedulerType.SERIAL, 345);
         List<Transaction> list = new ArrayList<>();
         newTransaction = true;
 
@@ -29,6 +29,9 @@ public class ParserImpl implements Parser {
             String currentLine;
 
             br = new BufferedReader(new FileReader(FILE_NAME));
+
+            currentLine  = br.readLine();
+            handleSettings(currentLine, parsedCommands);
 
             while ((currentLine = br.readLine()) != null) {
                 if (!currentLine.isEmpty()) {
@@ -46,30 +49,44 @@ public class ParserImpl implements Parser {
             }
         }
 
+        parsedCommands.setTransactions(list);
         //todo:omar parse sched type and seed
-        return new ParsedCommands(list, SchedulerType.SERIAL, 345);
+        return parsedCommands;
+    }
+
+    /**
+     * parse the scheduler type (SERIAL/RR/Random) and the seed.
+     */
+    private void handleSettings(String line, ParsedCommands parsedCommands) {
+        List<String> parameters = Arrays.asList(line.split(" "));
+        parsedCommands.setSchedulerType(SchedulerType.values()[Integer.valueOf(parameters.get(0))]);
+
+        if (Integer.valueOf(parameters.get(0)).equals(2)){
+            Double doubleSeed = Double.valueOf(parameters.get(1)) * 1000;
+            parsedCommands.setSeed(doubleSeed.longValue());
+        }
     }
 
     private void handleLine(List<Transaction> list, String line) {
-        if (newTransaction == true) {
-            newTransaction = false;
-            Transaction transaction = new Transaction(generateTransactionId());
-            list.add(transaction);
-        }
-        if (line.endsWith(";")){
-            newTransaction = true;
-        } else {
-            Operation operation = parseLine(line);
-            list.get(list.size()-1).add(operation);
-//            System.out.println(operation);
-        }
 
+        if(!line.isEmpty()) {
+            if (newTransaction == true) {
+                newTransaction = false;
+                Transaction transaction = new Transaction(generateTransactionId());
+                list.add(transaction);
+            }
+            if (line.endsWith(";")) {
+                newTransaction = true;
+            }
+            Operation operation = parseLine(line);
+            list.get(list.size()- 1).add(operation);
+
+        }
     }
 
     private Operation parseLine(String line) {
 
         Operation operation = new Operation(generateOperationId(), Command.getCommand(line), Command.getParameters(line));
-        //todo:omar implement this
         return operation;
     }
 

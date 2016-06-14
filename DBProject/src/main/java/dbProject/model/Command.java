@@ -1,7 +1,7 @@
 package dbProject.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public enum Command {
@@ -10,8 +10,7 @@ public enum Command {
     INSERT("I", 7),
     DELETE("D", 7),
     SEARCH("S", 7),
-    RANGE_SEARCH("R", 13),
-    END_TRANSACTION(";", 0);
+    RANGE_SEARCH("R", 13);
 
     private final String startsWith;
     private final int paramIndex;
@@ -40,27 +39,28 @@ public enum Command {
     }
 
     public static List<String> getParameters(String line) {
-        List result;
+        List<String> result = new ArrayList<>();
         Command command = Command.getCommand(line);
+        String rid = null;
 
         int endIdx;
         int startIdx = command.getParamIndex()+2;
+
         if (command.equals(ALLOCATE_RECORD) || command.equals(SEARCH)) {
-            endIdx = line.lastIndexOf("^")-1;
+            result.addAll(extractCSVtoList(line, startIdx, line.lastIndexOf("^")-1));
+            endIdx = line.endsWith(";")?line.length()-1:line.length();
+            result.add(line.substring(line.lastIndexOf("^")+1, endIdx));
         } else {
-            endIdx = line.length()-3;
-        }
-        if (line.endsWith(";")) {
-            endIdx--;
+            endIdx = line.endsWith(";")?line.length()-2:line.length()-1;
+            result.addAll(extractCSVtoList(line, startIdx, endIdx));
+
         }
 
-        //todo:omar extraxt rid parameter
-        result = extractCSVtoList(line, startIdx, endIdx);
         return result;
     }
 
-    private static List extractCSVtoList(String line, int startIdx, int endIdx) {
-        List result;
+    private static List<String> extractCSVtoList(String line, int startIdx, int endIdx) {
+        List<String> result;
         String parametersCSV = line.substring(startIdx, endIdx);
         result = Arrays.asList(parametersCSV.split(","));
         return result;

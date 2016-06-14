@@ -1,58 +1,57 @@
-3
 2 0.75
 
 1 Allocate_record(1, ”Technion”, “CS”)^rid1
-1 Insert(1, rid1) 
+1 Insert(1, rid1)
 1 Allocate_record(2, “BIU”, “CSE”)^rid2
-1 Insert(2, rid2);
-1 Allocate_record(3, ”Haifa”, “IS”) ^rid3
-1 Insert(3, rid3) 
-1 Allocate_record(4, ”BGU”, “EE”) ^rid4
+1 Insert(2, rid2)
+1 Allocate_record(3, ”Haifa”, “IS”)^rid3
+1 Insert(3, rid3)
+1 Allocate_record(4, ”BGU”, “EE”)^rid4
 1 Insert(4, rid4) 
-1 Allocate_record(5, ”ATA”, “ENG”) ^rid5
+1 Allocate_record(5, ”ATA”, “ENG”)^rid5
 1 Insert(5, rid5) 
-1 Allocate_record(6, ”BGU”, “EE”) ^rid6
+1 Allocate_record(6, ”BGU”, “EE”)^rid6
 1 Insert(6, rid6) 
 1 Search(1)^rid7
 1 Delete(1, rid7)
 1 Range_search(1, 5, 3)
 1 Range_search(3, 7, 5)
-1 Allocate_record(1, ”Technion”, “CSEE”) ^rid8
+1 Allocate_record(1, ”Technion”, “CSEE”)^rid8
 1 Insert(1, rid8)
 1 Search(1)^rid9
 1 Range_search(1, 3, 2);
- 
+
 2 Search(4)^rid24
 2 Delete(4, rid24)
 2 Range_search(2, 7, 5)
 2 Search(5)^rid25
 2 Delete(5, rid25)
 2 Range_search(2, 800, 56)
-2 Allocate_record(202, ”MIT”, “EECS”) ^rid26
+2 Allocate_record(202, ”MIT”, “EECS”)^rid26
 2 Insert(202, rid26);
 
-3 Allocate_record(303, ”Harvard”, “ENG”) ^rid31
+3 Allocate_record(303, ”Harvard”, “ENG”)^rid31
 3 Insert(202, rid31)
 3 Search(202)^rid32;
 
 4 Search(202)^rid41 
 4 Delete(rid4)
-4 Allocate_record(403, ”Stanford”, “CS”) ^rid42
+4 Allocate_record(403, ”Stanford”, “CS”)^rid42
 4 Range_search(1, 998, 60)
 4 Insert(403, rid42)
 4 Search(403)^rid43;
 
 5 Search(404)^rid52
-4 Allocate_record(505, ”NYU”, “BMD”) ^rid53
-4 Insert(505, rid53);
+5 Allocate_record(505, ”NYU”, “BMD”)^rid53
+5 Insert(505, rid53);
 
-6 Range_search(1, 600, 16);
-4 Allocate_record(613, ”WIS”, “BIN”) ^rid62
-4 Insert(613, rid62);
+6 Range_search(1, 600, 16)
+6 Allocate_record(613, ”WIS”, “BIN”)^rid62
+6 Insert(613, rid62);
 
 
-7 Range_search(1, 343, 20);
-7 Allocate_record(613, ”WIS”, “BIN”) ^rid72
+7 Range_search(1, 343, 20)
+7 Allocate_record(613, ”WIS”, “BIN”)^rid72
 7 Insert(701, rid72);
 
 8 Search(701)^rid82;
