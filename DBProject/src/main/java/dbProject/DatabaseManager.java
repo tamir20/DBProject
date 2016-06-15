@@ -31,6 +31,8 @@ public class DatabaseManager {
 
 	private Map<Integer, Set<Integer>> deletedRidLists;
 
+	private Map<String, Integer> variables;
+
 	public DatabaseManager() {
 		// init everything
 		this.parser = new ParserImpl();
@@ -38,6 +40,7 @@ public class DatabaseManager {
 		this.tree = new BPlusTree(NODE_SIZE, this.lockManager);
 		this.disk = new Disk();
 		this.deletedRidLists = new HashMap<Integer, Set<Integer>>();
+		this.variables = new HashMap<String, Integer>();
 	}
 
 	public void setSeed(long seed) {
@@ -48,7 +51,7 @@ public class DatabaseManager {
 
 		ParsedCommands parsedCommands = parser.parse();
 
-        List<Transaction> transactionList = parsedCommands.getTransactions();
+		List<Transaction> transactionList = parsedCommands.getTransactions();
 
 		for (int i = 0; i < transactionList.size(); i++) {
 			this.deletedRidLists.put(transactionList.get(i).getId(), new HashSet<Integer>());
@@ -56,7 +59,7 @@ public class DatabaseManager {
 
 		System.out.println(transactionList);
 
-        initialize(parsedCommands, transactionList);
+		initialize(parsedCommands, transactionList);
 
 		while (scheduler.hasNext()) {
 			OperationDescription od = scheduler.next();
@@ -64,20 +67,25 @@ public class DatabaseManager {
 			Command cmd;
 			if (od.isAborted() == false) {
 				if (od.getOperation() != -1) {
-					cmd = transactionList.get(od.getTransaction()).getByID(od.getOperation()).getCommand();
-					List<String> args = transactionList.get(od.getTransaction()).getByID(od.getOperation()).getArgs();
+					cmd = getTransactionByID(transactionList, od.getTransaction()).getByID(od.getOperation())
+							.getCommand();
+					List<String> args = getTransactionByID(transactionList, od.getTransaction())
+							.getByID(od.getOperation()).getArgs();
 					if (cmd == Command.ALLOCATE_RECORD) {
-						int rid = this.disk.allocateRecord(Integer.parseInt(args.get(0)), args.get(1), args.get(2));
+						int rid = this.disk.allocateRecord(Integer.parseInt(removeSpaces(args.get(0))),
+								removeSpaces(args.get(1)), removeSpaces(args.get(2)));
+						String variable = removeSpaces(args.get(3));
+						this.variables.put(variable, rid);
 						System.out.println("allocated record with rid = " + rid);
 					}
 					if (cmd == Command.INSERT) {
-						// TODO: change rid = 1 to the rid extracted by the
-						// parser, and key = 2 to the key extracted
+						int key = Integer.parseInt(removeSpaces(args.get(0)));
+						int variableValue = this.variables.get(removeSpaces(args.get(1)));
 						try {
-							this.lockManager.lockKeyWrite(2, transactionIndex);
-							int rid = tree.getValue(2, transactionIndex);
+							this.lockManager.lockKeyWrite(key, transactionIndex);
+							int rid = tree.getValue(key, transactionIndex);
 							if (rid < 0) {
-								this.tree.insertData(2, 1, transactionIndex);
+								this.tree.insertData(key, variableValue, transactionIndex);
 								System.out.println("inserted successfully");
 							} else {
 								this.scheduler.abortTransaction(transactionIndex);
@@ -92,15 +100,14 @@ public class DatabaseManager {
 						}
 					}
 					if (cmd == Command.DELETE) {
-						// TODO: change key = 2 to the rid extracted by the
-						// parser
+						int key = Integer.parseInt(removeSpaces(args.get(0)));
+						String variable = removeSpaces(args.get(1));
 						try {
-							this.lockManager.lockKeyWrite(2, transactionIndex);
-							int rid = tree.getValue(2, transactionIndex);
+							this.lockManager.lockKeyWrite(key, transactionIndex);
+							int rid = tree.getValue(key, transactionIndex);
 							if (rid >= 0) {
-								int ridDeleted = this.tree.removeData(2, transactionIndex);
-								// TODO: store ridDeleted in the variable of the
-								// delete command
+								int ridDeleted = this.tree.removeData(key, transactionIndex);
+								this.variables.put(variable, ridDeleted);
 								System.out.println("deleted successfully. rid deleted: " + ridDeleted);
 								this.deletedRidLists.get(transactionIndex).add(ridDeleted);
 							} else {
@@ -116,12 +123,12 @@ public class DatabaseManager {
 						}
 					}
 					if (cmd == Command.SEARCH) {
+						int key = Integer.parseInt(removeSpaces(args.get(0)));
+						String variable = removeSpaces(args.get(1));
 						Boolean successfullSearch = true;
 						int rid = -1;
 						try {
-							// TODO: change key = 2 to the key extracted by the
-							// parser
-							rid = this.tree.getValue(2, transactionIndex);
+							rid = this.tree.getValue(key, transactionIndex);
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while SEARCH");
@@ -134,6 +141,7 @@ public class DatabaseManager {
 								Record record = this.disk.readRecord(rid);
 								if (record != null) {
 									System.out.println("v1: " + record.getV1() + ", v2: " + record.getV2());
+									this.variables.put(variable, record.getK());
 								} else {
 									System.out.println("the rid retrieved from the tree cant be found on the disk");
 								}
@@ -142,8 +150,9 @@ public class DatabaseManager {
 					}
 					if (cmd == Command.RANGE_SEARCH) {
 						Boolean successfullRangeSearch = true;
-						int min = Integer.parseInt(args.get(0));
-						int max = Integer.parseInt(args.get(1));
+						int min = Integer.parseInt(removeSpaces(args.get(0)));
+						int max = Integer.parseInt(removeSpaces(args.get(1)));
+						int maxStrings = Integer.parseInt(removeSpaces(args.get(2)));
 						List<Integer> rids = null;
 						try {
 							rids = this.tree.range_search(min, max, transactionIndex);
@@ -157,10 +166,6 @@ public class DatabaseManager {
 								System.out.println("");
 							} else {
 								String result = "";
-								// TODO: change maxStrings to the maxStrings
-								// extracted
-								// by the parser
-								int maxStrings = 2;
 								if (maxStrings > rids.size()) {
 									maxStrings = rids.size();
 								}
@@ -179,17 +184,17 @@ public class DatabaseManager {
 					}
 				}
 			} else {
-				cmd = transactionList.get(od.getTransaction()).getByID(od.getOperation()).getCommand();
-				List<String> args = transactionList.get(od.getTransaction()).getByID(od.getOperation()).getArgs();
+				cmd = getTransactionByID(transactionList, od.getTransaction()).getByID(od.getOperation()).getCommand();
+				List<String> args = getTransactionByID(transactionList, od.getTransaction()).getByID(od.getOperation())
+						.getArgs();
 				if (cmd == Command.ALLOCATE_RECORD) {
-					this.disk.freeRecord(Integer.parseInt(args.get(0)));
-					System.out.println("freed record with rid = " + Integer.parseInt(args.get(0)));
+					this.disk.freeRecord(Integer.parseInt(removeSpaces(args.get(0))));
+					System.out.println("freed record with rid = " + Integer.parseInt(removeSpaces(args.get(0))));
 				}
 				if (cmd == Command.INSERT) {
-					// TODO: change rid = 1 to the rid extracted by the
-					// parser, and key = 2 to the key extracted
+					int key = Integer.parseInt(removeSpaces(args.get(0)));
 					try {
-						this.tree.removeData(2, transactionIndex);
+						this.tree.removeData(key, transactionIndex);
 						System.out.println("deleted successfully while aborting");
 					} catch (NumberFormatException | LockException e) {
 						this.scheduler.sleepTransaction(transactionIndex);
@@ -198,11 +203,10 @@ public class DatabaseManager {
 					}
 				}
 				if (cmd == Command.DELETE) {
-					// TODO: change key = 2 to the rid extracted by the
-					// parser and change rid = 1 to the value in the variable of
-					// the remove command
+					int key = Integer.parseInt(removeSpaces(args.get(0)));
+					int ridDeleted = this.variables.get(removeSpaces(args.get(1)));
 					try {
-						this.tree.insertData(2, 1, transactionIndex);
+						this.tree.insertData(key, ridDeleted, transactionIndex);
 						System.out.println("deleted successfully while aborting");
 					} catch (NumberFormatException | LockException e) {
 						this.scheduler.sleepTransaction(transactionIndex);
@@ -242,10 +246,24 @@ public class DatabaseManager {
 		}
 	}
 
-    private void initialize(ParsedCommands parsedCommands, List<Transaction> transactionList) {
-        scheduler = new Scheduler(transactionList);
-        scheduler.setSchedulerType(parsedCommands.getSchedulerType());
-        scheduler.setSeed(parsedCommands.getSeed());
-        lockManager = new LockManager(new Random(parsedCommands.getSeed()));
-    }
+	private Transaction getTransactionByID(List<Transaction> transactionList, int transaction) {
+		for (int i = 0; i < transactionList.size(); i++) {
+			if (transactionList.get(i).getId() == transaction) {
+				return transactionList.get(i);
+			}
+		}
+		return null;
+	}
+
+	String removeSpaces(String st) {
+		return st.replaceAll("\\s+", "");
+	}
+
+	private void initialize(ParsedCommands parsedCommands, List<Transaction> transactionList) {
+		scheduler = new Scheduler(transactionList);
+		scheduler.setSchedulerType(parsedCommands.getSchedulerType());
+		scheduler.setSeed(parsedCommands.getSeed());
+		lockManager = new LockManager(new Random(parsedCommands.getSeed()));
+		this.tree = new BPlusTree(NODE_SIZE, this.lockManager);
+	}
 }
