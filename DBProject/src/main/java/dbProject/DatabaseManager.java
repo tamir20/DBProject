@@ -33,6 +33,8 @@ public class DatabaseManager {
 
 	private Map<String, Integer> variables;
 
+	private Map<Integer, Integer> runCount;
+
 	public DatabaseManager() {
 		// init everything
 		this.parser = new ParserImpl();
@@ -41,6 +43,7 @@ public class DatabaseManager {
 		this.disk = new Disk();
 		this.deletedRidLists = new HashMap<Integer, Set<Integer>>();
 		this.variables = new HashMap<String, Integer>();
+		this.runCount = new HashMap<Integer, Integer>();
 	}
 
 	public void setSeed(long seed) {
@@ -64,6 +67,8 @@ public class DatabaseManager {
 		while (scheduler.hasNext()) {
 			OperationDescription od = scheduler.next();
 			int transactionIndex = od.getTransaction();
+			System.out.print(
+					"run number " + this.runCount.get(transactionIndex) + " of transaction" + transactionIndex + ": ");
 			Command cmd;
 			if (od.isAborted() == false) {
 				if (od.getOperation() != -1) {
@@ -232,6 +237,7 @@ public class DatabaseManager {
 
 			if (od.getOperation() == this.scheduler.getFirstOperation(transactionIndex) && od.isAborted()) {
 				this.lockManager.unlockEverything(transactionIndex);
+				this.runCount.put(transactionIndex, runCount.get(transactionIndex) + 1);
 			}
 
 			// awake transactions freed by the last transaction
@@ -265,5 +271,10 @@ public class DatabaseManager {
 		scheduler.setSeed(parsedCommands.getSeed());
 		lockManager = new LockManager(new Random(parsedCommands.getSeed()));
 		this.tree = new BPlusTree(NODE_SIZE, this.lockManager);
+
+		// initialize the runCount
+		for (int i = 0; i < transactionList.size(); i++) {
+			this.runCount.put(transactionList.get(i).getId(), 0);
+		}
 	}
 }
