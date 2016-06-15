@@ -1,6 +1,7 @@
 package dbProject;
 
 import dbProject.io.Output;
+import dbProject.io.OutputImpl;
 import dbProject.io.Parser;
 import dbProject.io.ParserImpl;
 import dbProject.model.*;
@@ -35,6 +36,8 @@ public class DatabaseManager {
 
 	private Map<Integer, Integer> runCount;
 
+	private Order order;
+
 	public DatabaseManager() {
 		// init everything
 		this.parser = new ParserImpl();
@@ -44,6 +47,8 @@ public class DatabaseManager {
 		this.deletedRidLists = new HashMap<Integer, Set<Integer>>();
 		this.variables = new HashMap<String, Integer>();
 		this.runCount = new HashMap<Integer, Integer>();
+		this.order = new Order();
+		this.output = new OutputImpl();
 	}
 
 	public void setSeed(long seed) {
@@ -67,8 +72,10 @@ public class DatabaseManager {
 		while (scheduler.hasNext()) {
 			OperationDescription od = scheduler.next();
 			int transactionIndex = od.getTransaction();
-			System.out.print(
-					"run number " + this.runCount.get(transactionIndex) + " of transaction" + transactionIndex + ": ");
+			this.output.writeAction(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
+			this.order.add(od.getTransaction() + "-" + od.getOperation());
+//			System.out.print("run number " + this.runCount.get(transactionIndex) + " of transaction " + transactionIndex
+//					+ " op " + od.getOperation() + ": ");
 			Command cmd;
 			if (od.isAborted() == false) {
 				if (od.getOperation() != -1) {
@@ -102,6 +109,7 @@ public class DatabaseManager {
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while INSERT");
+							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
 						}
 					}
 					if (cmd == Command.DELETE) {
@@ -125,6 +133,7 @@ public class DatabaseManager {
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while DELETE");
+							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
 						}
 					}
 					if (cmd == Command.SEARCH) {
@@ -137,6 +146,7 @@ public class DatabaseManager {
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while SEARCH");
+							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
 							successfullSearch = false;
 						}
 						if (successfullSearch) {
@@ -164,6 +174,7 @@ public class DatabaseManager {
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while RANGE SEARCH");
+							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
 							successfullRangeSearch = false;
 						}
 						if (successfullRangeSearch) {
@@ -238,6 +249,7 @@ public class DatabaseManager {
 			if (od.getOperation() == this.scheduler.getFirstOperation(transactionIndex) && od.isAborted()) {
 				this.lockManager.unlockEverything(transactionIndex);
 				this.runCount.put(transactionIndex, runCount.get(transactionIndex) + 1);
+				this.output.writeTransactionRestart(transactionIndex, this.runCount.get(transactionIndex));
 			}
 
 			// awake transactions freed by the last transaction
@@ -249,7 +261,11 @@ public class DatabaseManager {
 				this.scheduler.abortTransaction(abortedTransaction);
 				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
 			}
+			System.out.println();
 		}
+		this.output.finish(this.tree, this.order);
+		System.out.println("order of execution:");
+		System.out.println(this.order.toString());
 	}
 
 	private Transaction getTransactionByID(List<Transaction> transactionList, int transaction) {
@@ -274,7 +290,7 @@ public class DatabaseManager {
 
 		// initialize the runCount
 		for (int i = 0; i < transactionList.size(); i++) {
-			this.runCount.put(transactionList.get(i).getId(), 0);
+			this.runCount.put(transactionList.get(i).getId(), 1);
 		}
 	}
 }
