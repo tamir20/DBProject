@@ -263,9 +263,6 @@ public class DatabaseManager {
 
 			// check for deadlocks
 			if (this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions()) != -1) {
-				if (this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions()) == 2) {
-					System.out.println("here");
-				}
 				int abortedTransaction = this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions());
 				Boolean resetedTransaction = this.scheduler.abortTransaction(abortedTransaction);
 				if (resetedTransaction) {
