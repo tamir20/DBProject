@@ -1,5 +1,8 @@
 package dbProject.io;
 
+import dbProject.BPlusTree;
+import dbProject.Order;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -71,7 +74,11 @@ public class OutputImpl implements Output {
     }
 
     @Override
-    public void finish() {
+    public void finish(BPlusTree tree, Order order) {
+        System.out.println(tree);
+        out.println(tree);
+        System.out.println(order);
+        out.println(order);
         out.flush();
 
     }

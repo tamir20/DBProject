@@ -1,5 +1,8 @@
 package dbProject.io;
 
+import dbProject.BPlusTree;
+import dbProject.Order;
+
 /**
  * This class handles the application's output to the LOG file
  */
@@ -12,5 +15,5 @@ public interface Output {
 
     void writeFreeText(String s);
 
-    void finish();
+    void finish(BPlusTree tree, Order order);
 }

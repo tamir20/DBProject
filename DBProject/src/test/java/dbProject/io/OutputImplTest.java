@@ -16,6 +16,6 @@ public class OutputImplTest {
         output.writeAction(1,1,2);
         output.writeFreeText("stam text");
 
-        output.finish();
+        output.finish(null, null);
     }
 }
