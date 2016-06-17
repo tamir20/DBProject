@@ -74,8 +74,10 @@ public class DatabaseManager {
 			int transactionIndex = od.getTransaction();
 			this.output.writeAction(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
 			this.order.add(od.getTransaction() + "-" + od.getOperation());
-//			System.out.print("run number " + this.runCount.get(transactionIndex) + " of transaction " + transactionIndex
-//					+ " op " + od.getOperation() + ": ");
+			// System.out.print("run number " +
+			// this.runCount.get(transactionIndex) + " of transaction " +
+			// transactionIndex
+			// + " op " + od.getOperation() + ": ");
 			Command cmd;
 			if (od.isAborted() == false) {
 				if (od.getOperation() != -1) {
@@ -109,7 +111,8 @@ public class DatabaseManager {
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while INSERT");
-							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
+							this.output.writeWait(transactionIndex, od.getOperation(),
+									this.runCount.get(transactionIndex));
 						}
 					}
 					if (cmd == Command.DELETE) {
@@ -133,7 +136,8 @@ public class DatabaseManager {
 						} catch (NumberFormatException | LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while DELETE");
-							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
+							this.output.writeWait(transactionIndex, od.getOperation(),
+									this.runCount.get(transactionIndex));
 						}
 					}
 					if (cmd == Command.SEARCH) {
@@ -146,7 +150,8 @@ public class DatabaseManager {
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while SEARCH");
-							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
+							this.output.writeWait(transactionIndex, od.getOperation(),
+									this.runCount.get(transactionIndex));
 							successfullSearch = false;
 						}
 						if (successfullSearch) {
@@ -174,7 +179,8 @@ public class DatabaseManager {
 						} catch (LockException e) {
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while RANGE SEARCH");
-							this.output.writeWait(transactionIndex, od.getOperation(), this.runCount.get(transactionIndex));
+							this.output.writeWait(transactionIndex, od.getOperation(),
+									this.runCount.get(transactionIndex));
 							successfullRangeSearch = false;
 						}
 						if (successfullRangeSearch) {
@@ -257,8 +263,14 @@ public class DatabaseManager {
 
 			// check for deadlocks
 			if (this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions()) != -1) {
+				if (this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions()) == 2) {
+					System.out.println("here");
+				}
 				int abortedTransaction = this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions());
-				this.scheduler.abortTransaction(abortedTransaction);
+				Boolean resetedTransaction = this.scheduler.abortTransaction(abortedTransaction);
+				if (resetedTransaction) {
+					this.lockManager.unlockEverything(transactionIndex);
+				}
 				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
 			}
 			System.out.println();

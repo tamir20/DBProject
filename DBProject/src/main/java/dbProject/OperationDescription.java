@@ -29,4 +29,8 @@ public class OperationDescription {
 	public Boolean isAborted() {
 		return this.aborted;
 	}
+
+	public void setAborted(Boolean aborted) {
+		this.aborted = aborted;
+	}
 }

@@ -15,7 +15,7 @@ public class Scheduler {
 	// after each operation, need to awake transactions and check for deadlock
 	public final int COMMIT = -1;
 
-    private List<List<OperationDescription>> transactionsBackup;
+	private List<List<OperationDescription>> transactionsBackup;
 	private List<List<OperationDescription>> transactions;
 	private List<List<OperationDescription>> transactionsSleep;
 	private SchedulerType type;
@@ -77,7 +77,9 @@ public class Scheduler {
 		this.seedRand = new Random(seed);
 	}
 
-	public void abortTransaction(int index) {
+	public Boolean abortTransaction(int index) {
+		Boolean resetedTransaction = false;
+
 		// I assume the transactions have at least 1 operation
 		List<OperationDescription> abortedTransaction = new LinkedList<OperationDescription>();
 
@@ -93,6 +95,12 @@ public class Scheduler {
 		for (int i = 0; i < this.transactionsSleep.size(); i++) {
 			if ((this.transactionsSleep.get(i).get(0)).getTransaction() == index) {
 				abortedTransaction = getAbortedTransaction(this.transactionsSleep.get(i), true);
+				if (!abortedTransaction.get(0).isAborted()) {
+					// if we are here then the transaction was reseted after
+					// executing first command, thus maybe locked some locks,
+					// then need to unlock all of its locks
+					resetedTransaction = true;
+				}
 				this.transactionsSleep.remove(i);
 			}
 		}
@@ -100,6 +108,7 @@ public class Scheduler {
 		// run the transaction in reverse from the aborted operation in
 		// aborted mode
 		this.transactions.add(abortedTransaction);
+		return resetedTransaction;
 	}
 
 	public OperationDescription next() {
