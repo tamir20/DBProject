@@ -1,38 +1,21 @@
 package dbProject.io;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-/**
- * Created by omar on 6/8/16.
- */
 public class OutputImplTest {
 
-    @Before
-    public void clearFile() {
-
-    }
     @Test
-    public void writeAction() throws Exception {
+    public void writeToLogTest() throws Exception {
 
+        Output output = new OutputImpl();
 
+        output.writeAction(1,1,1);
+        output.writeAction(1,2,1);
+        output.writeWait(1,3,1);
+        output.writeTransactionRestart(1,1);
+        output.writeAction(1,1,2);
+        output.writeFreeText("stam text");
+
+        output.finish();
     }
-
-    @Test
-    public void writeWait() throws Exception {
-
-    }
-
-    @Test
-    public void writeTransactionRestart() throws Exception {
-
-    }
-
-    @Test
-    public void finish() throws Exception {
-
-    }
-
 }

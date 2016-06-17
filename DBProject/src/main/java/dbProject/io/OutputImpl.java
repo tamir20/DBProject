@@ -26,22 +26,13 @@ public class OutputImpl implements Output {
     public OutputImpl() {
 
         try {
-            this.fw = new FileWriter("LOG", true);
+            this.fw = new FileWriter("LOG.txt", true);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
         this.bw = new BufferedWriter(fw);
         this.out = new PrintWriter(bw);
-//        try()
-//        {
-//            out.println("the text");
-//            //more code
-//            out.println("more text");
-//            //more code
-//        } catch (IOException e) {
-//            //exception handling left as an exercise for the reader
-//        }
     }
 
     @Override
@@ -80,10 +71,14 @@ public class OutputImpl implements Output {
     }
 
     @Override
-    public void finish(Object bTree, Object order) {
-        String str = "FINISHED";
-        System.out.println(str);
-        out.println(str);
+    public void finish() {
+        out.flush();
 
+    }
+
+    @Override
+    public void writeFreeText(String s) {
+        System.out.println(s);
+        out.println(s);
     }
 }
