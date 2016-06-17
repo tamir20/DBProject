@@ -220,6 +220,24 @@ public class Lock {
 			int waitingTransaction = this.waiters.get(k).getIndex();
 			for (int i = 0; i < this.holders.size(); i++) {
 				Map<String, Integer> edge = new HashMap<String, Integer>();
+				int from = this.holders.get(i).intValue();
+				int to = waitingTransaction;
+				// because if a transaction is waiting for itself, then it is
+				// also waiting for all the waiting transaction that asked for
+				// a lock before it
+				if (from == to) {
+					Boolean foundMyself = false;
+					for (int j = 0; j < waiters.size() && !foundMyself; j++) {
+						Map<String, Integer> edgeInWaitingList = new HashMap<String, Integer>();
+						if (waiters.get(j).getIndex() != to) {
+							edgeInWaitingList.put("from", this.waiters.get(j).getIndex());
+							edgeInWaitingList.put("to", waitingTransaction);
+							edges.add(edgeInWaitingList);
+						} else {
+							foundMyself = true;
+						}
+					}
+				}
 				edge.put("from", this.holders.get(i).intValue());
 				edge.put("to", waitingTransaction);
 				edges.add(edge);

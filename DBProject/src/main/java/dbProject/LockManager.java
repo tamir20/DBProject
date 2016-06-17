@@ -182,9 +182,10 @@ public class LockManager {
 				for (int j = 0; j < edges.size(); j++) {
 					int from = edges.get(j).get("from");
 					int to = edges.get(j).get("to");
+					if(from!=to){
 					if (!aborting.contains(from) && !aborting.contains(to)) {
 						g.addEdge(from, to);
-					}
+					}}
 				}
 			}
 		}
