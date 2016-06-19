@@ -1,6 +1,5 @@
 package dbProject.model;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +50,19 @@ public class LeafNode extends Node {
 
 	public void setPrev(LeafNode prev) {
 		this.prev = prev;
+	}
+
+	@Override
+	public String toString() {
+		String result = "{";
+		for (int i = 0; i < this.entries.size(); i++) {
+			result += this.entries.get(i).toString();
+			if (i != this.entries.size() - 1) {
+				result += " ";
+			}
+		}
+		result += "}";
+		return result;
 	}
 
 }

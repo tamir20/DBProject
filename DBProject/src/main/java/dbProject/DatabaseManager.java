@@ -156,14 +156,17 @@ public class DatabaseManager {
 						}
 						if (successfullSearch) {
 							if (rid < 0) {
-								System.out.println("no key found, returning 0");
+								System.out.println("no key found");
 							} else {
 								Record record = this.disk.readRecord(rid);
 								if (record != null) {
-									System.out.println("v1: " + record.getV1() + ", v2: " + record.getV2());
+									// System.out.println("v1: " +
+									// record.getV1() + ", v2: " +
+									// record.getV2());
+									this.output.writeFreeText("v1: " + record.getV1() + ", v2: " + record.getV2());
 									this.variables.put(variable, record.getK());
 								} else {
-									System.out.println("the rid retrieved from the tree cant be found on the disk");
+									System.out.println("the rid retrieved from the tree can't be found on the disk");
 								}
 							}
 						}
@@ -200,7 +203,8 @@ public class DatabaseManager {
 										result += rec.getV1() + " " + rec.getV2();
 									}
 								}
-								System.out.println(result);
+								// System.out.println(result);
+								this.output.writeFreeText(result);
 							}
 						}
 					}
@@ -273,8 +277,8 @@ public class DatabaseManager {
 			System.out.println();
 		}
 		this.output.finish(this.tree, this.order);
-		System.out.println("order of execution:");
-		System.out.println(this.order.toString());
+		// System.out.println("order of execution:");
+		// System.out.println(this.order.toString());
 	}
 
 	private Transaction getTransactionByID(List<Transaction> transactionList, int transaction) {

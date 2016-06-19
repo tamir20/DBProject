@@ -24,4 +24,15 @@ public class TreeNode extends Node {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		String result = "";
+		result += "{";
+		for (int i = 0; i < sons.size(); i++) {
+			result += sons.get(i).toString();
+		}
+		result += "}";
+		return result;
+	}
+
 }

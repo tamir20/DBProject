@@ -9,19 +9,24 @@ public class Data {
 		this.rID = rID;
 	}
 
-    public int getKey() {
-        return key;
-    }
+	public int getKey() {
+		return key;
+	}
 
-    public void setKey(int key) {
-        this.key = key;
-    }
+	public void setKey(int key) {
+		this.key = key;
+	}
 
-    public int getrID() {
-        return rID;
-    }
+	public int getrID() {
+		return rID;
+	}
 
-    public void setrID(int rID) {
-        this.rID = rID;
-    }
+	public void setrID(int rID) {
+		this.rID = rID;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(this.key);
+	}
 }

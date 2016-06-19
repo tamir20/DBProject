@@ -121,6 +121,11 @@ public class BPlusTree {
 		return list;
 	}
 
+	@Override
+	public String toString() {
+		return this.root.toString();
+	}
+	
 	private LeafNode getLeaf(int key, int transactionIndex) throws LockException {
 		// return the leaf to wich a key belongs
 		// @input: key number
