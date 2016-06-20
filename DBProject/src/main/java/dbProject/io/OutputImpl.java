@@ -3,10 +3,7 @@ package dbProject.io;
 import dbProject.BPlusTree;
 import dbProject.Order;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * Created by omar on 6/6/16.
@@ -27,6 +24,13 @@ public class OutputImpl implements Output {
     private PrintWriter out;
 
     public OutputImpl() {
+        //clear - delete the file
+        try {
+            File file = new File("LOG.txt");
+            file.delete();
+        } catch (Exception e) {
+            System.out.println("Failed to delete the LOG.txt file");
+        }
 
         try {
             this.fw = new FileWriter("LOG.txt", true);
