@@ -10,4 +10,9 @@ public class LockKey extends Lock {
 	public int getKey() {
 		return this.key;
 	}
+	
+	@Override
+	public String toString() {
+		return "{object: "+ this.key+ " lock: "+super.toString()+"}";
+	}
 }

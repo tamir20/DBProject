@@ -1,4 +1,4 @@
-3
+2 0.74765
 
 1 Allocate_record(1, ”Technion”, “CS”)^rid1
 1 Insert(1, rid1)

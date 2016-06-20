@@ -12,4 +12,9 @@ public class LockPage extends Lock {
 	public Object getPage() {
 		return this.page;
 	}
+	
+	@Override
+	public String toString() {
+		return "{object: "+ this.page.toString()+ " lock: "+super.toString()+"}";
+	}
 }

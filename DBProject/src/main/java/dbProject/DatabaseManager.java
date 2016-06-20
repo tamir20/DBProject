@@ -109,6 +109,9 @@ public class DatabaseManager {
 								// here
 							}
 						} catch (NumberFormatException | LockException e) {
+							// if there was a problem in getting locks, maybe
+							// some page locks weren't unlocked
+							this.lockManager.unlockAllPages(transactionIndex);
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while INSERT");
 							this.output.writeWait(transactionIndex, od.getOperation(),
@@ -134,6 +137,9 @@ public class DatabaseManager {
 								// here
 							}
 						} catch (NumberFormatException | LockException e) {
+							// if there was a problem in getting locks, maybe
+							// some page locks weren't unlocked
+							this.lockManager.unlockAllPages(transactionIndex);
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while DELETE");
 							this.output.writeWait(transactionIndex, od.getOperation(),
@@ -148,6 +154,9 @@ public class DatabaseManager {
 						try {
 							rid = this.tree.getValue(key, transactionIndex);
 						} catch (LockException e) {
+							// if there was a problem in getting locks, maybe
+							// some page locks weren't unlocked
+							this.lockManager.unlockAllPages(transactionIndex);
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while SEARCH");
 							this.output.writeWait(transactionIndex, od.getOperation(),
@@ -180,6 +189,9 @@ public class DatabaseManager {
 						try {
 							rids = this.tree.range_search(min, max, transactionIndex);
 						} catch (LockException e) {
+							// if there was a problem in getting locks, maybe
+							// some page locks weren't unlocked
+							this.lockManager.unlockAllPages(transactionIndex);
 							this.scheduler.sleepTransaction(transactionIndex);
 							System.out.println("transaction " + transactionIndex + " is waiting while RANGE SEARCH");
 							this.output.writeWait(transactionIndex, od.getOperation(),

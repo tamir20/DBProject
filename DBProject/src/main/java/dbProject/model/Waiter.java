@@ -17,4 +17,12 @@ public class Waiter {
 	public LockType getType() {
 		return this.type;
 	}
+
+	@Override
+	public String toString() {
+		if (this.type == LockType.READ) {
+			return this.transactionIndex + " READ";
+		}
+		return this.transactionIndex + " WRITE";
+	}
 }

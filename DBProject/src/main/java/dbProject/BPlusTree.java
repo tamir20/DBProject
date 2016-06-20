@@ -80,6 +80,8 @@ public class BPlusTree {
 			}
 			this.lock.unlockPageWrite(leaf, transactionIndex);
 			this.lock.unlockPageWrite(new_leaf, transactionIndex);
+		} else {
+			this.lock.unlockPageRead(leaf, transactionIndex);
 		}
 
 		return res;
@@ -125,7 +127,7 @@ public class BPlusTree {
 	public String toString() {
 		return this.root.toString();
 	}
-	
+
 	private LeafNode getLeaf(int key, int transactionIndex) throws LockException {
 		// return the leaf to wich a key belongs
 		// @input: key number
@@ -303,7 +305,11 @@ public class BPlusTree {
 	private Next search(int key, int maxKey, int transactionIndex) throws LockException {
 		this.lock.lockKeyRead(getKeyBefore(key, transactionIndex), transactionIndex);
 		LeafNode leaf = getLeaf(key, transactionIndex);
-		return next(key - 1, leaf, maxKey, transactionIndex);
+		Next next = next(key - 1, leaf, maxKey, transactionIndex);
+		if (next == null) {
+			this.lock.unlockPageRead(leaf, transactionIndex);
+		}
+		return next;
 	}
 
 }

@@ -245,4 +245,9 @@ public class Lock {
 		}
 		return edges;
 	}
+
+	@Override
+	public String toString() {
+		return "{holders: " + this.holders.toString() + " , waiters: " + this.waiters.toString() + "}";
+	}
 }

@@ -100,6 +100,16 @@ public class LockManager {
 			}
 		}
 	}
+	
+	public void unlockAllPages(int transactionIndex) {
+		for (Iterator<LockPage> iter = pageList.iterator(); iter.hasNext();) {
+			LockPage lock = iter.next();
+			lock.unlockEverything(transactionIndex);
+			if (!lock.inUse()) {
+				iter.remove();
+			}
+		}
+	}
 
 	public void lockPageWrite(Object page, int transactionIndex) throws LockException {
 		// Boolean success;
@@ -202,6 +212,11 @@ public class LockManager {
 			}
 		}
 		return g.findRandomTransactionInCycle();
+	}
+	
+	@Override
+	public String toString() {
+		return this.keyList.toString() + " , " + this.pageList.toString() + "}";
 	}
 
 }
