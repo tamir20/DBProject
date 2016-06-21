@@ -1,7 +1,5 @@
 package dbProject.model;
 
-import dbProject.Lock;
-
 public class LockPage extends Lock {
 	private Object page;
 

@@ -1,7 +1,7 @@
 package dbProject.io;
 
 import dbProject.BPlusTree;
-import dbProject.Order;
+import dbProject.model.Order;
 
 /**
  * This class handles the application's output to the LOG file

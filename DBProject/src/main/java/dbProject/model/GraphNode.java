@@ -1,4 +1,4 @@
-package dbProject;
+package dbProject.model;
 
 import java.util.LinkedList;
 import java.util.List;

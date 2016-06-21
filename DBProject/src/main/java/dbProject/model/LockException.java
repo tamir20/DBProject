@@ -1,4 +1,4 @@
-package dbProject;
+package dbProject.model;
 
 public class LockException extends Exception {
 	/**

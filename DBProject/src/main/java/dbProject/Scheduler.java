@@ -1,5 +1,6 @@
 package dbProject;
 
+import dbProject.model.OperationDescription;
 import dbProject.model.SchedulerType;
 import dbProject.model.Transaction;
 

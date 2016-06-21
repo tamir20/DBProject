@@ -1,5 +1,8 @@
 package dbProject;
 
+import dbProject.model.Graph;
+import dbProject.model.LockException;
+import dbProject.model.LockKey;
 import dbProject.model.LockPage;
 
 import java.util.HashSet;
