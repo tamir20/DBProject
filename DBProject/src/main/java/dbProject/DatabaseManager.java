@@ -285,6 +285,7 @@ public class DatabaseManager {
 					this.lockManager.unlockEverything(abortedTransaction);
 				}
 				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
+				this.scheduler.awakeTransactions(this.lockManager.awakeTransactions());
 			}
 			System.out.println();
 		}
