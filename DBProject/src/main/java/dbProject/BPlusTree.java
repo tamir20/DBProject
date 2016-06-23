@@ -13,6 +13,9 @@ public class BPlusTree {
 	private LockManager lock;
 
 	public BPlusTree(int node_size, LockManager lock) {
+		// BPlusTree constractor function
+		// @input: size of each node on the tree, a lock meneger.
+		// @output: new BPlusTree
 		LeafNode leafNode = new LeafNode(0);
 		this.node_size = node_size;
 		this.root = leafNode;
@@ -108,6 +111,10 @@ public class BPlusTree {
 	}
 
 	public List<Integer> range_search(int minKey, int maxKey, int transactionIndex) throws LockException {
+		// Search all entries in key range
+		// @input: minimal key number, maximal key number, transection index
+		// number.
+		// @output: a list of all the entries between minimal and maximal key.
 		List<Integer> list = new LinkedList<Integer>();
 		Next next = search(minKey, maxKey, transactionIndex);
 		Next prevNext = null;
@@ -276,6 +283,12 @@ public class BPlusTree {
 	}
 
 	private Next next(int key, LeafNode leaf, int maxKey, int transactionIndex) throws LockException {
+		// Returns the next entry after the entry with requested key as long as
+		// one with a key smaller
+		// than a max key value exists.
+		// @input: previous key number, starting leaf, maximal key value,
+		// transection index number.
+		// @output: next entry
 		this.lock.lockKeyRead(key, transactionIndex);
 		LeafNode curr_leaf = leaf;
 		while (curr_leaf != null) {
@@ -303,6 +316,12 @@ public class BPlusTree {
 	}
 
 	private Next search(int key, int maxKey, int transactionIndex) throws LockException {
+		// serch for a an entry of a key value or the smallest key value that is
+		// larger than the specivied key value as long as it's smaller than a
+		// specified max key value. than a max key value exists.
+		// @input: searched key number, starting leaf, maximal key value,
+		// transection index number.
+		// @output: next entry
 		this.lock.lockKeyRead(getKeyBefore(key, transactionIndex), transactionIndex);
 		LeafNode leaf = getLeaf(key, transactionIndex);
 		Next next = next(key - 1, leaf, maxKey, transactionIndex);
