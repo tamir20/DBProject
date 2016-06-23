@@ -282,7 +282,7 @@ public class DatabaseManager {
 				int abortedTransaction = this.lockManager.recommendAbort(this.scheduler.getAbortingTransactions());
 				Boolean resetedTransaction = this.scheduler.abortTransaction(abortedTransaction);
 				if (resetedTransaction) {
-					this.lockManager.unlockEverything(transactionIndex);
+					this.lockManager.unlockEverything(abortedTransaction);
 				}
 				System.out.println("aborted transaction " + abortedTransaction + " due to deadlock");
 			}
